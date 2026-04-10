@@ -43,7 +43,8 @@ export function ProductFeature() {
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity duration-300"
+                  className="w-full h-full object-cover opacity-90 scale-100 hover:opacity-100 hover:scale-[1.03]"
+                  style={{ transition: 'opacity 600ms ease, transform 1000ms cubic-bezier(0.45, 0, 0.55, 1)' }}
                 />
               </div>
 
