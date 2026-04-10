@@ -58,18 +58,19 @@ export function ProductGrid() {
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.5, delay: (i % 10) * 0.04, ease }}
               >
-                <div className={`group ${!isActive ? 'opacity-40 pointer-events-none' : ''}`}>
+                <div className="group">
                   {/* 图片区：普通 3:4 竖版，放大 3:2 横版，行高自动对齐 */}
-                  <div className={`overflow-hidden bg-card ${featured ? 'aspect-[3/2]' : 'aspect-[3/4]'}`}>
+                  <div className={`relative overflow-hidden bg-card ${featured ? 'aspect-[3/2]' : 'aspect-[3/4]'}`}>
                     <img
                       src={product.image}
                       alt={product.name}
-                      className={`w-full h-full object-cover ${
-                        isActive
-                          ? 'opacity-90 group-hover:opacity-100 transition-opacity duration-300'
-                          : ''
-                      }`}
+                      className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-300"
                     />
+                    {!isActive && (
+                      <span className="absolute top-3 left-3 text-[9px] tracking-[2px] uppercase text-foreground/50 border border-foreground/20 px-2 py-0.5 bg-background/80 backdrop-blur-sm">
+                        已下架
+                      </span>
+                    )}
                   </div>
 
                   {/* 信息区 */}
@@ -80,9 +81,7 @@ export function ProductGrid() {
                     <p className="relative inline-block text-[13px] tracking-[2px] uppercase font-normal text-foreground group cursor-default">
                       <span className="relative">
                         {product.name}
-                        {isActive && (
-                          <span className="absolute bottom-0 left-0 w-full h-px bg-foreground scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300" />
-                        )}
+                        <span className="absolute bottom-0 left-0 w-full h-px bg-foreground scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300" />
                       </span>
                     </p>
                     <p className="text-[13px] font-light text-foreground/70">
