@@ -31,7 +31,7 @@ export const products: Product[] = [
     stock: 6999,
     tagline: '一款高性能的毫米波雷达发射模块，作为专业传感器，采用先进毫米波技术，具备稳定的信号发射能力，可广泛适用于多种需要精确探测与感知的应用场景',
     industry: '',
-    image: '/products/AR-PJ001.jpg',
+    image: '/products/AR-PJ001.png',
     specs: [{ label: '工作频段', value: '77 GHz' }, { label: '工作温度', value: '-40°C ~ +85°C' }, { label: '防护等级', value: 'IP67' }, { label: '接口类型', value: 'CAN / UART' }],
   },
   {
@@ -45,7 +45,7 @@ export const products: Product[] = [
     stock: 3999,
     tagline: '一款专为倒车辅助设计的超声波传感器，作为车辆安全感知系统的关键部件，通过发射和接收超声波信号实现对车辆后方障碍物的精准探测',
     industry: '',
-    image: '/products/AR-PJ002.jpg',
+    image: '/products/AR-PJ002.png',
     specs: [{ label: '工作频段', value: '77 GHz' }, { label: '工作温度', value: '-40°C ~ +85°C' }, { label: '防护等级', value: 'IP67' }, { label: '接口类型', value: 'CAN / UART' }],
   },
   {
@@ -59,7 +59,7 @@ export const products: Product[] = [
     stock: 4999,
     tagline: '一款高性能的汽车雷达信号处理芯片，作为核心处理部件，专为汽车雷达系统设计',
     industry: '',
-    image: '/products/AR-PJ003.jpg',
+    image: '/products/AR-PJ003.png',
     specs: [{ label: '工作频段', value: '77 GHz' }, { label: '工作温度', value: '-40°C ~ +85°C' }, { label: '防护等级', value: 'IP67' }, { label: '接口类型', value: 'CAN / UART' }],
   },
   {
@@ -87,7 +87,7 @@ export const products: Product[] = [
     stock: 3499,
     tagline: '一款专业的前碰撞预警雷达核心处理部件，具备高效的信号处理能力，能够精准监测前方目标，为车辆主动安全系统提供关键数据支持',
     industry: '',
-    image: '/products/AR-PJ005.jpg',
+    image: '/products/AR-PJ005.png',
     specs: [{ label: '工作频段', value: '77 GHz' }, { label: '工作温度', value: '-40°C ~ +85°C' }, { label: '防护等级', value: 'IP67' }, { label: '接口类型', value: 'CAN / UART' }],
   },
   {
@@ -115,7 +115,7 @@ export const products: Product[] = [
     stock: 300,
     tagline: '一款专业的盲点监测雷达传感器，作为发射接收部件，产品编码为AR-PJ007',
     industry: '',
-    image: '/products/AR-PJ007.jpg',
+    image: '/products/AR-PJ007.png',
     specs: [{ label: '工作频段', value: '77 GHz' }, { label: '工作温度', value: '-40°C ~ +85°C' }, { label: '防护等级', value: 'IP67' }, { label: '接口类型', value: 'CAN / UART' }],
   },
   {
@@ -129,7 +129,7 @@ export const products: Product[] = [
     stock: 500,
     tagline: '一款专业的汽车雷达数据传输线，作为发射接收部件，专为汽车雷达系统设计，实现雷达信号的高效稳定传输，保障雷达数据在发射与接收过程中的准确性和实时性，为汽车雷达系统的可靠运行提供关键连接支持',
     industry: '',
-    image: '/products/AR-PJ008.jpg',
+    image: '/products/AR-PJ008.png',
     specs: [{ label: '工作频段', value: '77 GHz' }, { label: '工作温度', value: '-40°C ~ +85°C' }, { label: '防护等级', value: 'IP67' }, { label: '接口类型', value: 'CAN / UART' }],
   },
   {
@@ -143,7 +143,7 @@ export const products: Product[] = [
     stock: 600,
     tagline: '一款专业的自适应巡航雷达校准辅助设备（产品编码：AR-PJ009），专为车辆自适应巡航系统的精准调试与性能保障设计',
     industry: '',
-    image: '/products/AR-PJ009.jpg',
+    image: '/products/AR-PJ009.png',
     specs: [{ label: '工作频段', value: '77 GHz' }, { label: '工作温度', value: '-40°C ~ +85°C' }, { label: '防护等级', value: 'IP67' }, { label: '接口类型', value: 'CAN / UART' }],
   },
   {
@@ -157,7 +157,7 @@ export const products: Product[] = [
     stock: 800,
     tagline: '一款高性能的全景环视雷达控制盒，作为关键辅助设备，集成先进信号处理技术与多传感器融合算法，通过精确的环境感知与数据整合，为车辆提供全方位的周围环境监测与态势分析能力，有效提升驾驶安全性与辅助决策效率',
     industry: '',
-    image: '/products/AR-PJ010.jpg',
+    image: '/products/AR-PJ010.png',
     specs: [{ label: '工作频段', value: '77 GHz' }, { label: '工作温度', value: '-40°C ~ +85°C' }, { label: '防护等级', value: 'IP67' }, { label: '接口类型', value: 'CAN / UART' }],
   },
   {
@@ -171,7 +171,7 @@ export const products: Product[] = [
     stock: 120,
     tagline: '一款专为汽车自动驾驶打造的车规级激光雷达产品，型号为AR-LR-001，其产品名称为车规级 120° 超远距激光雷达 Pro',
     industry: '汽车自动驾驶',
-    image: '/products/AR-LR-001.jpg',
+    image: '/products/AR-LR-001.png',
     specs: [{ label: '测距范围', value: '0-300m' }, { label: '视场角', value: '120° (H) x 18° (V)' }, { label: '定位精度', value: '/' }, { label: '姿态精度', value: '/' }],
   },
   {
@@ -199,7 +199,7 @@ export const products: Product[] = [
     stock: 150,
     tagline: '一款专为汽车自动驾驶设计的车规级激光雷达，产品编码AR-LR-003',
     industry: '汽车自动驾驶',
-    image: '/products/AR-LR-003.jpg',
+    image: '/products/AR-LR-003.png',
     specs: [{ label: '测距范围', value: '0-250m' }, { label: '视场角', value: '120° (H) x 20° (V)' }, { label: '定位精度', value: '/' }, { label: '姿态精度', value: '/' }],
   },
   {
