@@ -72,12 +72,12 @@ export function ProductFeature({ onProductClick }: { onProductClick: (p: Product
                   {parseKeyParams(product.keyParams).slice(0, 4).map((param) => (
                     <div
                       key={param.label}
-                      className="flex justify-between border-b border-border py-3 gap-4"
+                      className="flex justify-between items-start border-b border-border py-4 gap-4"
                     >
-                      <span className="text-[11px] tracking-[2px] uppercase text-muted-foreground shrink-0">
+                      <span className="text-[11px] leading-[1.5] tracking-[2px] uppercase text-muted-foreground shrink-0">
                         {param.label}
                       </span>
-                      <span className="text-[13px] font-light text-foreground text-right">
+                      <span className="text-[13px] leading-[1.5] font-light text-foreground text-right">
                         {param.value}
                       </span>
                     </div>
