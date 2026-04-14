@@ -4,6 +4,7 @@ const ease = [0.16, 1, 0.3, 1] as const
 
 const W = 1440
 const H = 900
+const VH = H + 80  // viewBox 底部预留缓冲，防止末尾波浪被 slice 裁切
 const WAVE_COLOR = 'oklch(72% 0.04 65)'
 
 function scrollDist(wl: number): number {
@@ -30,7 +31,7 @@ const waves = [
   { y: 0.53 * H, amp: 22, wl: 540, dur: 34, op: 0.38, del: -16, breathe: 13.1 },
   { y: 0.66 * H, amp: 16, wl: 470, dur: 32, op: 0.45, del:  -8, breathe: 9.6  },
   { y: 0.79 * H, amp: 13, wl: 460, dur: 27, op: 0.42, del: -20, breathe: 6.8  },
-  { y: 0.92 * H, amp: 18, wl: 520, dur: 36, op: 0.38, del:  -3, breathe: 12.4 },
+  { y: 0.87 * H, amp: 18, wl: 520, dur: 36, op: 0.38, del:  -3, breathe: 12.4 },
 ]
 
 export function SiteHero() {
@@ -39,7 +40,7 @@ export function SiteHero() {
 
       <svg
         className="pointer-events-none absolute inset-0 w-full h-full"
-        viewBox={`0 0 ${W} ${H}`}
+        viewBox={`0 0 ${W} ${VH}`}
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"
       >

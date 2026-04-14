@@ -59,7 +59,7 @@ export function CategoryShowcase({ onProductClick }: CategoryShowcaseProps) {
               <img
                 src={product.image}
                 alt={product.name}
-                className={`w-full h-full object-contain ${i === 0 ? 'scale-[1.20] group-hover:scale-[1.24]' : 'scale-100 group-hover:scale-[1.04]'}`}
+                className="w-full h-full object-contain scale-100 group-hover:scale-[1.04]"
                 style={{ transition: 'transform 1000ms cubic-bezier(0.45, 0, 0.55, 1)' }}
               />
             </div>
@@ -67,7 +67,13 @@ export function CategoryShowcase({ onProductClick }: CategoryShowcaseProps) {
             {/* 文字条：白底，无灰色分割感 */}
             <div className="px-1 pt-3 pb-4 space-y-0.5">
               <p className="text-[10px] tracking-[3px] uppercase text-muted-foreground">{product.category}</p>
-              <p className="text-[12px] font-light text-foreground tracking-wide">{product.name}</p>
+              <p className="text-[12px] font-light text-foreground tracking-wide relative inline-block">
+                {product.name}
+                <span
+                  className="absolute bottom-0 left-0 h-px w-full bg-foreground origin-left scale-x-0 group-hover:scale-x-100"
+                  style={{ transition: 'transform 500ms cubic-bezier(0.25, 0.1, 0.25, 1)' }}
+                />
+              </p>
             </div>
           </button>
         ))}
