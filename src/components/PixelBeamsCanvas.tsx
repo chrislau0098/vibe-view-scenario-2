@@ -54,21 +54,27 @@ void main() {
   vec2  uvA    = vec2(uv.x * aspect, uv.y);
 
   // Scroll through noise space — genuine drift, no visible period
-  float t = u_time * 0.08;
+  float t = u_time * 0.20;
   vec2  p = uvA * 2.8 + vec2(t * 0.9, t * 0.55);
 
-  // Raw FBM then contrast shaping: beam zones emerge sharply
-  float raw    = fbm(p);
-  float shaped = smoothstep(0.44, 0.70, raw);  // below 44 % → pure dark
-  shaped        = pow(shaped, 2.0);             // crush midtones, punch peaks
+  // Raw FBM — smooth spatial field in [0, 1]
+  float raw = fbm(p);
 
-  // Dot grid — 15 CSS px cell, dot radius scales with beam intensity
-  float cellSz  = 15.0 * u_dpr;
-  float dotRad  = mix(0.2, 2.1, shaped) * u_dpr;  // 0.2 px (sub-pixel) → 2.1 px
+  // Wide smoothstep gives a gentle onset for light dots;
+  // high pow() (3.5) means only the true FBM peaks become dark —
+  // most of the field stays as very light dots, avoiding flat dark patches.
+  float shaped = smoothstep(0.30, 0.82, raw);
+  shaped        = pow(shaped, 4.5);
+
+  // Dot grid — 11 CSS px cell
+  float cellSz  = 11.0 * u_dpr;
+  // Size range: 0.2 px (near-invisible fringe) → 1.2 px (small dark center)
+  float dotRad  = mix(0.2, 1.2, shaped) * u_dpr;
   vec2  fromCtr = abs(fract(fc / cellSz) - 0.5) * cellSz;
   float isDot   = step(fromCtr.x, dotRad) * step(fromCtr.y, dotRad);
 
-  float dotAlpha = shaped * 0.58;  // 0 in dark zones, 0.58 at peak
+  // Alpha: only the sharp peak reaches 0.55 (dark); fringe stays very light
+  float dotAlpha = shaped * 0.55;
 
   vec3 bg     = vec3(0.992);                     // #FDFDFD
   vec3 dotCol = vec3(0.118, 0.110, 0.102);       // warm near-black
