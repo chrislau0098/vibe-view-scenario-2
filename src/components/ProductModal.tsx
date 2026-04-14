@@ -21,8 +21,8 @@ export function ProductModal({ product, onClose }: ProductModalProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: [0.165, 0.84, 0.44, 1] as const }}
             >
-              {/* Header — 全宽，含品牌信息与关闭按钮 */}
-              <div className="px-10 md:px-14 pt-10 pb-7 flex items-start justify-between border-b border-border/20">
+              {/* Header — 吸顶，滚动时不随内容移动 */}
+              <div className="sticky top-0 z-10 bg-background px-10 md:px-14 pt-10 pb-7 flex items-start justify-between border-b border-border/20">
                 <div className="space-y-1.5">
                   <p className="text-[10px] tracking-[3px] uppercase text-muted-foreground">
                     {product.code} · {product.category}

@@ -101,7 +101,7 @@ export function SiteHero() {
           驱动智驾未来
         </h1>
 
-        <p className="text-[14px] text-muted-foreground font-light leading-relaxed whitespace-nowrap">
+        <p className="text-[15px] font-light text-foreground/70 leading-relaxed whitespace-nowrap">
           专注汽车雷达核心部件研发与制造，以毫米级精度重新定义主动安全边界。
         </p>
 

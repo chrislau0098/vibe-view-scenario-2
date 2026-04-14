@@ -71,7 +71,7 @@ export function CategoryShowcase({ onProductClick }: CategoryShowcaseProps) {
             {/* 文字条：白底，无灰色分割感 */}
             <div className="px-1 pt-3 pb-4 space-y-0.5">
               <p className="text-[10px] tracking-[3px] uppercase text-muted-foreground">{product.category}</p>
-              <p className="text-[12px] font-light text-foreground tracking-wide relative inline-block">
+              <p className="text-[14px] font-light text-foreground tracking-wide relative inline-block">
                 {product.name}
                 <motion.span
                   className="absolute bottom-0 left-0 h-px w-full bg-foreground"

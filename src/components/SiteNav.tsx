@@ -29,7 +29,7 @@ export function SiteNav() {
         <div className="text-center">
           <a
             href="/"
-            className="text-[13px] tracking-[4px] uppercase font-light text-foreground"
+            className="text-[16px] tracking-[4px] uppercase font-light text-foreground"
           >
             AutoRadar
           </a>

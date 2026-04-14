@@ -88,13 +88,13 @@ export function ProductFeature({ onProductClick }: { onProductClick: (p: Product
                 <div className="pt-2 flex items-center gap-8">
                   <button
                     onClick={() => onProductClick(product)}
-                    className="text-[12px] tracking-[2px] uppercase border-b border-foreground pb-px text-foreground hover:text-muted-foreground hover:border-muted-foreground transition-colors duration-300"
+                    className="text-[14px] tracking-[2px] uppercase border-b border-foreground pb-px text-foreground hover:text-muted-foreground hover:border-muted-foreground transition-colors duration-300"
                   >
                     查看详情
                   </button>
                   <a
                     href={`mailto:sales@autoradar.cn?subject=询价：${product.name}（${product.code}）`}
-                    className="text-[12px] tracking-[2px] uppercase text-muted-foreground border-b border-muted-foreground pb-px hover:text-foreground hover:border-foreground transition-colors duration-300"
+                    className="text-[14px] tracking-[2px] uppercase text-muted-foreground border-b border-muted-foreground pb-px hover:text-foreground hover:border-foreground transition-colors duration-300"
                   >
                     询价咨询
                   </a>
