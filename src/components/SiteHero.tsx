@@ -1,10 +1,12 @@
 import { motion } from 'motion/react'
+import { PixelBeamsCanvas } from './PixelBeamsCanvas'
 
 const ease = [0.16, 1, 0.3, 1] as const
 
+/* ---------- SVG sine-wave background (commented out — kept for future use) ----------
 const W = 1440
 const H = 900
-const VH = H + 80  // viewBox 底部预留缓冲，防止末尾波浪被 slice 裁切
+const VH = H + 80
 const WAVE_COLOR = 'oklch(72% 0.04 65)'
 
 function scrollDist(wl: number): number {
@@ -33,47 +35,14 @@ const waves = [
   { y: 0.79 * H, amp: 13, wl: 460, dur: 27, op: 0.42, del: -20, breathe: 6.8  },
   { y: 0.87 * H, amp: 18, wl: 520, dur: 36, op: 0.38, del:  -3, breathe: 12.4 },
 ]
+-------------------------------------------------------------------------- */
 
 export function SiteHero() {
   return (
     <section className="relative min-h-screen bg-background flex items-center justify-center pt-16 overflow-hidden">
 
-      <svg
-        className="pointer-events-none absolute inset-0 w-full h-full"
-        viewBox={`0 0 ${W} ${VH}`}
-        preserveAspectRatio="xMidYMid slice"
-        aria-hidden="true"
-      >
-        {waves.map((w, i) => (
-          <motion.path
-            key={i}
-            d={sinePath(w.y, w.amp, w.wl)}
-            fill="none"
-            stroke={WAVE_COLOR}
-            strokeWidth={1.2}
-            initial={{ opacity: w.op * 0.4 }}
-            animate={{
-              x: [0, -scrollDist(w.wl)],
-              opacity: [w.op * 0.25, w.op * 0.65],
-            }}
-            transition={{
-              x: {
-                duration: w.dur,
-                repeat: Infinity,
-                ease: 'linear',
-                delay: w.del,
-              },
-              opacity: {
-                duration: w.breathe,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                repeatType: 'mirror',
-                delay: i * 1.1,
-              },
-            }}
-          />
-        ))}
-      </svg>
+      {/* Pixel Beams — WebGL dot-grid with animated beam intensity */}
+      <PixelBeamsCanvas />
 
       <div
         className="pointer-events-none absolute inset-0"
