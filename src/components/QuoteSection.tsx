@@ -14,7 +14,7 @@ export function QuoteSection() {
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.8, ease }}
         >
-          感知每一毫秒的精度
+          感知每一毫米的精度
         </motion.p>
       </div>
     </section>

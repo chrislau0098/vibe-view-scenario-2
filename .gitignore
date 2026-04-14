@@ -12,6 +12,18 @@ dist
 dist-ssr
 *.local
 
+# Local dev / AI config (not for distribution)
+CLAUDE.md
+AGENTS.md
+DESIGN.md
+CONTEXT.md
+.claude/
+.agents/
+.mcp.json
+.impeccable.md
+skills-lock.json
+Frame 2147225077.png
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
