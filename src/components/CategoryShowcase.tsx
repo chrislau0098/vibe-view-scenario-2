@@ -32,7 +32,7 @@ export function CategoryShowcase({ onProductClick }: CategoryShowcaseProps) {
     .filter((p): p is Product => p !== null)
 
   return (
-    <section id="products" className="bg-background py-24 border-t border-border/20">
+    <section id="products" className="bg-background py-24">
       <div className="max-w-7xl mx-auto px-6 mb-12 space-y-2">
         <p className="text-[11px] tracking-[3px] uppercase text-muted-foreground">Products</p>
         <h2 className="text-2xl font-light tracking-tight text-foreground">产品系列</h2>
@@ -52,12 +52,15 @@ export function CategoryShowcase({ onProductClick }: CategoryShowcaseProps) {
             className={`group flex flex-col bg-background cursor-pointer text-left w-full${i === 0 ? ' col-span-2' : ''}`}
           >
             {/* 图片区：灰底留在图片层，不扩散到文字条 */}
-            <div className={`relative overflow-hidden bg-muted${i === 0 ? ' aspect-[3/2]' : ' aspect-[3/4]'}`}>
+            <div
+              className={`relative overflow-hidden ${i === 0 ? 'aspect-[3/2]' : 'aspect-[3/4] bg-muted'}`}
+              style={i === 0 ? { backgroundColor: '#F7F7F7' } : undefined}
+            >
               <img
                 src={product.image}
                 alt={product.name}
-                className="w-full h-full object-cover opacity-90 scale-100 group-hover:opacity-100 group-hover:scale-[1.04]"
-                style={{ transition: 'opacity 600ms ease, transform 1000ms cubic-bezier(0.45, 0, 0.55, 1)' }}
+                className={`w-full h-full object-contain ${i === 0 ? 'scale-[1.20] group-hover:scale-[1.24]' : 'scale-100 group-hover:scale-[1.04]'}`}
+                style={{ transition: 'transform 1000ms cubic-bezier(0.45, 0, 0.55, 1)' }}
               />
             </div>
 

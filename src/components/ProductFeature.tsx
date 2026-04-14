@@ -10,7 +10,7 @@ export function ProductFeature({ onProductClick }: { onProductClick: (p: Product
   const featured = FEATURED_IDS.map(id => products.find(p => p.id === id)!)
 
   return (
-    <section className="bg-card py-24 border-t border-border/30">
+    <section className="bg-card py-24">
       <div className="max-w-7xl mx-auto px-6 space-y-0">
         {featured.map((product, i) => {
           const isReversed = i % 2 === 1
@@ -73,7 +73,7 @@ export function ProductFeature({ onProductClick }: { onProductClick: (p: Product
                   {parseKeyParams(product.keyParams).slice(0, 4).map((param) => (
                     <div
                       key={param.label}
-                      className="flex justify-between border-b border-border/50 py-3 gap-4"
+                      className="flex justify-between border-b border-border py-3 gap-4"
                     >
                       <span className="text-[11px] tracking-[2px] uppercase text-muted-foreground shrink-0">
                         {param.label}
