@@ -46,21 +46,25 @@ export function CategoryShowcase({ onProductClick }: CategoryShowcaseProps) {
         transition={{ duration: 0.6, ease: [0.165, 0.84, 0.44, 1] as const }}
       >
         {showcaseProducts.map((product, i) => (
-          <button
+          <motion.button
             key={product.id}
             onClick={() => onProductClick(product)}
-            className={`group flex flex-col bg-background cursor-pointer text-left w-full${i === 0 ? ' col-span-2' : ''}`}
+            className={`flex flex-col bg-background cursor-pointer text-left w-full${i === 0 ? ' col-span-2' : ''}`}
+            initial="rest"
+            whileHover="hover"
+            animate="rest"
           >
             {/* 图片区：灰底留在图片层，不扩散到文字条 */}
             <div
               className={`relative overflow-hidden ${i === 0 ? 'aspect-[3/2]' : 'aspect-[3/4] bg-muted'}`}
               style={i === 0 ? { backgroundColor: '#F7F7F7' } : undefined}
             >
-              <img
+              <motion.img
                 src={product.image}
                 alt={product.name}
-                className="w-full h-full object-contain scale-100 group-hover:scale-[1.04]"
-                style={{ transition: 'transform 1000ms cubic-bezier(0.45, 0, 0.55, 1)' }}
+                className="w-full h-full object-contain"
+                variants={{ rest: { scale: 1 }, hover: { scale: 1.04 } }}
+                transition={{ duration: 0.28, ease: [0.45, 0, 0.55, 1] as const }}
               />
             </div>
 
@@ -69,13 +73,15 @@ export function CategoryShowcase({ onProductClick }: CategoryShowcaseProps) {
               <p className="text-[10px] tracking-[3px] uppercase text-muted-foreground">{product.category}</p>
               <p className="text-[12px] font-light text-foreground tracking-wide relative inline-block">
                 {product.name}
-                <span
-                  className="absolute bottom-0 left-0 h-px w-full bg-foreground origin-left scale-x-0 group-hover:scale-x-100"
-                  style={{ transition: 'transform 500ms cubic-bezier(0.25, 0.1, 0.25, 1)' }}
+                <motion.span
+                  className="absolute bottom-0 left-0 h-px w-full bg-foreground"
+                  style={{ originX: 0 }}
+                  variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+                  transition={{ duration: 0.28, ease: [0.25, 0.1, 0.25, 1] as const }}
                 />
               </p>
             </div>
-          </button>
+          </motion.button>
         ))}
       </motion.div>
     </section>
