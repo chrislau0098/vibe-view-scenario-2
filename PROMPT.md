@@ -1,29 +1,53 @@
-# AutoRadar — Design Prompt for Full Site Reconstruction
+# AutoRadar — Complete Site Reconstruction Prompt
 
-You are a senior frontend engineer. Your task is to reconstruct a complete single-page product showcase website pixel-for-pixel from this specification. Follow every instruction precisely. Do not add features, introduce new styles, or deviate from the values given.
+You are a senior frontend engineer. Your task is to build a complete single-page product showcase website from scratch using the exact specification below. The output must be **100% faithful** to the original design — every font size, spacing value, color token, animation parameter, and WebGL shader must match exactly.
+
+## Requirements
+
+1. Write all code into a **single file: `src/App.tsx`**. Do not split into multiple component files.
+2. All product data, images, and downloadable files come from a **Feishu (Lark) Base** at runtime. Do not hard-code any product content. Leave `image` and `dataSheetUrl` as empty strings `""` during scaffolding; they will be populated from the Feishu API response.
+3. Reproduce the **WebGL ASCII canvas** effect exactly — the GLSL shader code below must be copied verbatim. Do not rewrite it.
+4. Use **Tailwind CSS v4** (CSS-first, no `tailwind.config.js`) and **`motion/react`** for all animations. Never use string easing values; always use cubic-bezier arrays.
+5. For hover animations involving scale transforms, use **`motion/react` variant propagation** — Tailwind v4's `scale-[x]` utility generates a standalone CSS `scale:` property that CSS `transition` cannot capture.
+6. The `src/index.css` file must be created exactly as specified in Section 2.
 
 ---
 
 ## 1. Tech Stack
 
-Install exactly the following (do not add others):
-
-```
-react@18, vite, typescript
-tailwindcss@4 via @tailwindcss/vite  (NO tailwind.config.js — CSS-first config only)
-motion  (import { motion } from 'motion/react')
-@base-ui-components/react  (import { Dialog } from '@base-ui-components/react/dialog')
-@fontsource-variable/geist
-shadcn/ui  (Tailwind v4 mode, run: npx shadcn@latest init)
+```bash
+npm create vite@latest . -- --template react-ts
+npm install motion @base-ui-components/react @fontsource-variable/geist
+npm install -D tailwindcss@next @tailwindcss/vite tw-animate-css
+npx shadcn@latest init   # select Tailwind v4 mode
 ```
 
-Path alias: `@/` → `./src/` — configure in both `vite.config.ts` and `tsconfig.app.json`.
+**`vite.config.ts`** — add `@tailwindcss/vite` plugin and `@/` alias:
+```ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+import path from 'path'
 
-`tsconfig.app.json` must include `"ignoreDeprecations": "6.0"`.
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  resolve: { alias: { '@': path.resolve(__dirname, './src') } },
+})
+```
+
+**`tsconfig.app.json`** — add paths and suppress deprecation warnings:
+```json
+{
+  "compilerOptions": {
+    "paths": { "@/*": ["./src/*"] },
+    "ignoreDeprecations": "6.0"
+  }
+}
+```
 
 ---
 
-## 2. Global Styles — `src/index.css`
+## 2. `src/index.css` — Complete (copy verbatim)
 
 ```css
 @import "tailwindcss";
@@ -36,15 +60,17 @@ Path alias: `@/` → `./src/` — configure in both `vite.config.ts` and `tsconf
 @theme inline {
   --font-sans: 'Geist Variable', sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, monospace;
-  --color-background:       var(--background);
-  --color-foreground:       var(--foreground);
-  --color-card:             var(--card);
-  --color-card-foreground:  var(--card-foreground);
-  --color-muted:            var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-border:           var(--border);
-  --color-primary:          var(--primary);
+  --color-background:         var(--background);
+  --color-foreground:         var(--foreground);
+  --color-card:               var(--card);
+  --color-card-foreground:    var(--card-foreground);
+  --color-muted:              var(--muted);
+  --color-muted-foreground:   var(--muted-foreground);
+  --color-border:             var(--border);
+  --color-input:              var(--input);
+  --color-primary:            var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-ring:               var(--ring);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -61,6 +87,7 @@ Path alias: `@/` → `./src/` — configure in both `vite.config.ts` and `tsconf
   --input:              oklch(90% 0 0);
   --primary:            oklch(11% 0.005 60);
   --primary-foreground: oklch(99% 0 0);
+  --ring:               oklch(11% 0.005 60);
   --radius:             0.125rem;
 }
 
@@ -78,267 +105,175 @@ Path alias: `@/` → `./src/` — configure in both `vite.config.ts` and `tsconf
 }
 ```
 
-**Design language:** near-white background (`oklch(99% 0 0)` ≈ `#FDFDFD`), near-black text, zero chroma — fully monochromatic B&O/Bang & Olufsen precision aesthetic. No accent colors, no gradients on content, no rounded corners (`radius: 0.125rem` is essentially sharp).
+**Design language:** near-white `oklch(99% 0 0)` background, near-black `oklch(11% 0.005 60)` text, zero chroma. No accent colors, no rounded corners (`--radius: 0.125rem` is essentially sharp). B&O / Bang & Olufsen precision aesthetic.
 
 ---
 
-## 3. Animation Rules (apply everywhere)
+## 3. `src/App.tsx` — Complete (copy verbatim)
 
-- **`ease` must always be a cubic-bezier array — never a string:**
-  - Standard enter: `[0.165, 0.84, 0.44, 1]`
-  - Fast snap: `[0.45, 0, 0.55, 1]`
-  - Gentle: `[0.25, 0.1, 0.25, 1]`
-- Hero content uses `animate`. All other sections use `whileInView` with `viewport={{ once: true, margin: '-60px' }}`.
-- **Critical — Tailwind v4 hover scale incompatibility:** `scale-[x]` in Tailwind v4 generates a standalone CSS `scale:` property, not `transform: scale()`. CSS transitions on `transform` will silently fail to capture it. **All hover scale/transform animations must use `motion/react` variant propagation:**
-  - Parent button: `<motion.button initial="rest" animate="rest" whileHover="hover">`
-  - Children: `<motion.img variants={{ rest: { scale: 1 }, hover: { scale: 1.04 } }} transition={{ duration: 0.28, ease: [0.45, 0, 0.55, 1] }}>`
-  - Variant name `"hover"` propagates automatically from parent to all descendants that declare `variants`.
+```tsx
+import { useState, useEffect, useRef } from 'react'
+import { motion } from 'motion/react'
+import { Dialog } from '@base-ui-components/react/dialog'
 
----
+// ─────────────────────────────────────────────────────────────
+// TYPES
+// ─────────────────────────────────────────────────────────────
 
-## 4. Data Model — `src/data/products.ts`
+type ProductCategory =
+  | '传感器' | '核心处理部件' | '发射接收部件' | '辅助设备'
+  | '激光雷达' | '毫米波雷达' | '组合导航系统' | '机器人控制器'
 
-> **Data source:** All product records, images, and downloadable files come from a Feishu (Lark) Base at runtime. The product table below is reference-only for field names and approximate values. The authoritative values are whatever the Feishu Base returns. Do not hard-code product data into the frontend — fetch it from the API layer.
+type ProductStatusTag = '样品' | '量产' | '在售' | '停产'
 
-```ts
-export type ProductCategory =
-  '传感器' | '核心处理部件' | '发射接收部件' | '辅助设备' |
-  '激光雷达' | '毫米波雷达' | '组合导航系统' | '机器人控制器'
-
-export type ProductStatusTag = '样品' | '量产' | '在售' | '停产'
-
-export interface Product {
-  id: string          // e.g. 'RF-7701L'
-  name: string        // Chinese product name
-  code: string        // Display code, e.g. 'AR - PJ003'
+interface Product {
+  id: string
+  name: string
+  code: string
   category: ProductCategory
   status: ProductStatusTag[]
   price: number
-  tagline: string     // Full product description (first sentence used in modal)
+  tagline: string
   industry: string
-  image: string       // Resolved download URL from Feishu attachment — leave as '' during scaffolding
+  image: string       // tmp_url from Feishu attachment field; '' while loading
   keyParams: string   // '；'-delimited "label：value" pairs
   detailSpecs: string
-  dataSheetUrl?: string  // Resolved download URL from Feishu attachment — leave as '' if not yet fetched
+  dataSheetUrl?: string  // tmp_url from Feishu attachment field; omit if empty
 }
 
-// Parses keyParams string into [{label, value}] array
-// Split by '；', for each chunk split at first '：'
-export function parseKeyParams(raw: string): { label: string; value: string }[]
+// ─────────────────────────────────────────────────────────────
+// FEISHU DATA SOURCE
+// Base token : YOegbLb4SaifeCsAjRjchRx1n5c
+// Table ID   : tblyf2dtGWcr30JJ
+// Auth token : set VITE_FEISHU_ACCESS_TOKEN in .env
+// ─────────────────────────────────────────────────────────────
 
-export function isActive(p: Product): boolean {
-  return p.status.includes('在售') && !p.status.includes('停产')
+const FEISHU_BASE = 'https://open.feishu.cn/open-apis'
+const APP_TOKEN  = 'YOegbLb4SaifeCsAjRjchRx1n5c'
+const TABLE_ID   = 'tblyf2dtGWcr30JJ'
+
+// Feishu bitable attachment fields return [{tmp_url, file_token, name, size}]
+// tmp_url is a time-limited public URL — use it directly as <img src>
+// It does NOT require an Authorization header.
+
+function getAttachmentUrl(field: unknown): string {
+  if (!Array.isArray(field) || field.length === 0) return ''
+  return (field[0] as { tmp_url?: string }).tmp_url ?? ''
 }
 
-export const products: Product[] = [ /* 20 products */ ]
-export const activeProducts = products.filter(isActive)
-export const categories: ProductCategory[] = [ /* 8 in order */ ]
-export const categoryGroups: Record<string, Product[]> = /* grouped by category */
-```
+function getTextValue(field: unknown): string {
+  if (!field) return ''
+  if (typeof field === 'string') return field
+  if (typeof field === 'number') return String(field)
+  if (Array.isArray(field)) return field.map((v: any) => v.text ?? v).join('')
+  return String(field)
+}
 
-**All 20 products** (id / name / category / price):
+function getNumber(field: unknown): number {
+  return typeof field === 'number' ? field : parseFloat(String(field)) || 0
+}
 
-| id | name | category | price |
-|----|------|----------|-------|
-| RF-7701L | 77GHz 毫米波雷达发射模块 Lite | 传感器 | 5182.29 |
-| RF-7702P | 77GHz 毫米波雷达发射模块 Pro | 传感器 | 8697.15 |
-| RF-7905M | 79GHz 多通道同步发射模块 Max | 传感器 | 21742.86 |
-| AR-PJ003 | 汽车雷达信号处理芯片 | 核心处理部件 | 1981.93 |
-| AR-PJ004 | 激光雷达反射镜组件 | 核心处理部件 | 3605.27 |
-| AR-PJ005 | 前碰撞预警雷达 | 核心处理部件 | 1738.60 |
-| AR-PJ006 | 车载毫米波雷达天线 | 发射接收部件 | 7792.29 |
-| AR-PJ007 | 盲点监测雷达传感器 | 发射接收部件 | 8907.15 |
-| AR-PJ008 | 汽车雷达数据传输线 | 发射接收部件 | 5242.29 |
-| AR-PJ009 | 自适应巡航雷达校准 | 辅助设备 | 4618.57 |
-| AR-LR-001 | 车规级 120° 超远距激光雷达 Pro | 激光雷达 | 22192.56 |
-| AR-LR-002 | 车规级 90° 中距激光雷达 Lite | 激光雷达 | 13555.42 |
-| AR-LR-005 | 车规级 120° 超远距增强激光雷达 Max | 激光雷达 | 42885.43 |
-| IR-LR-001 | 迷你型 360°×40° 室内导航激光雷达 Lite | 激光雷达 | 8636.85 |
-| AR-MW-001 | 车规级 77GHz 前向毫米波雷达 Pro | 毫米波雷达 | 8426.85 |
-| IR-MW-006 | 工业级 77GHz 室外避障毫米波雷达 | 毫米波雷达 | 8880.93 |
-| INS-001 | 车规级组合惯导系统 Lite | 组合导航系统 | 14294.94 |
-| INS-005 | 工业级组合惯导系统 Lite | 组合导航系统 | 16119.35 |
-| RC-100L | 入门级移动机器人控制器 Lite | 机器人控制器 | 21442.86 |
-| RC-300X | 高性能机器人控制器 Plus | 机器人控制器 | 52722.87 |
+function getMultiSelect(field: unknown): string[] {
+  if (!field) return []
+  if (Array.isArray(field)) return field.map((v: any) => v.text ?? v)
+  return [(field as any).text ?? field]
+}
 
-The table above is for reference only. Field values (name, price, keyParams, etc.) must come from the Feishu Base at runtime. Images and datasheet files are Feishu attachment fields — their download URLs must be resolved via the API (see Section 4.5). **Do not place any product images or datasheet files in `public/`.**
+function mapRecord(fields: Record<string, unknown>): Product | null {
+  const id   = getTextValue(fields['产品编号'] ?? fields['ID'])
+  const name = getTextValue(fields['产品名称'])
+  if (!id || !name) return null
+  return {
+    id,
+    name,
+    code:         getTextValue(fields['产品编号'] ?? fields['code']),
+    category:     getTextValue(fields['产品线'] ?? fields['分类']) as ProductCategory,
+    status:       getMultiSelect(fields['状态']) as ProductStatusTag[],
+    price:        getNumber(fields['销售价格'] ?? fields['价格']),
+    tagline:      getTextValue(fields['产品信息'] ?? fields['tagline']),
+    industry:     getTextValue(fields['应用行业']),
+    image:        getAttachmentUrl(fields['产品图片']),
+    keyParams:    getTextValue(fields['关键参数']),
+    detailSpecs:  getTextValue(fields['详细规格']),
+    dataSheetUrl: getAttachmentUrl(fields['资料下载']) || undefined,
+  }
+}
 
----
+async function fetchAllProducts(): Promise<Product[]> {
+  const token = (import.meta as any).env?.VITE_FEISHU_ACCESS_TOKEN as string
+  if (!token) {
+    console.warn('[Feishu] VITE_FEISHU_ACCESS_TOKEN not set — returning empty product list')
+    return []
+  }
+  const headers = { 'Authorization': `Bearer ${token}` }
+  const results: Product[] = []
+  let pageToken = ''
 
-## 4.5 Feishu Base — Data Source
+  do {
+    const url = `${FEISHU_BASE}/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_ID}/records?page_size=100${pageToken ? `&page_token=${pageToken}` : ''}`
+    const res  = await fetch(url, { headers })
+    const data = await res.json()
+    if (data.code !== 0) { console.error('[Feishu] API error:', data.msg); break }
+    for (const item of data.data.items) {
+      const p = mapRecord(item.fields)
+      if (p) results.push(p)
+    }
+    pageToken = data.data.has_more ? data.data.page_token : ''
+  } while (pageToken)
 
-**Base:** `YOegbLb4SaifeCsAjRjchRx1n5c` · **Table:** `tblyf2dtGWcr30JJ`
+  return results
+}
 
-### Field mapping (Feishu field name → Product interface key)
+// ─────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────
 
-| Feishu Field | Type | Product key |
-|---|---|---|
-| ID / 产品编号 | Text | `id`, `code` |
-| 产品名称 | Text | `name` |
-| 产品线 / 分类 | Single-select | `category` |
-| 状态 | Multi-select | `status` |
-| 销售价格 | Number | `price` |
-| 产品信息 | Long text | `tagline` |
-| 应用行业 | Text | `industry` |
-| 产品图片 | Attachment | `image` (resolved URL) |
-| 关键参数 | Long text | `keyParams` |
-| 详细规格 | Long text | `detailSpecs` |
-| 资料下载 | Attachment | `dataSheetUrl` (resolved URL) |
+function parseKeyParams(raw: string): { label: string; value: string }[] {
+  if (!raw) return []
+  return raw.split('；').map(pair => {
+    const i = pair.indexOf('：')
+    if (i === -1) return null
+    return { label: pair.slice(0, i).trim(), value: pair.slice(i + 1).trim() }
+  }).filter(Boolean) as { label: string; value: string }[]
+}
 
-### Image and file URL resolution
+// ─────────────────────────────────────────────────────────────
+// WEBGL ASCII CANVAS
+// Architecture: glyph atlas pre-rendered on Canvas 2D, uploaded
+// as a WebGL texture. One draw call per frame — zero CPU fillText.
+// ─────────────────────────────────────────────────────────────
 
-Product images and datasheet files are stored as Feishu attachment fields. Their download URLs are **not** returned directly by the record list API — you must resolve them separately:
-
-```
-GET /open-apis/drive/v1/medias/{file_token}/download
-```
-
-- `file_token` is found inside the attachment field value of each record
-- The response is a binary stream; obtain a pre-signed URL or serve via proxy
-- **Do not use `drive +download` shortcut** — it returns 403 for bitable attachments; use the raw API endpoint above
-- During scaffolding / code generation, set `image: ''` and `dataSheetUrl: ''` as empty-string placeholders; the data-fetching layer will populate them at runtime
-
-### Product data at runtime
-
-- Fetch all records from the table using the Feishu Base API (`+record-list` or equivalent)
-- Map each record to the `Product` interface using the field mapping above
-- The number of products, their names, prices, and parameter values are determined entirely by what the Base contains — do not assume exactly 20 products or any specific field values
-
----
-
-## 5. Page Architecture — `src/App.tsx`
-
-```
-<div min-h-screen bg-background text-foreground antialiased>
-  <SiteNav />                              ← fixed, z-50
-  <main>
-    <SiteHero />
-    <CategoryShowcase onProductClick />    ← id="products"
-    <QuoteSection />
-    <ProductFeature onProductClick />
-    <ContactSection />                     ← id="contact"
-  </main>
-  <SiteFooter />
-  <ProductModal product={activeProduct} onClose={() => setActiveProduct(null)} />
-</div>
-```
-
-State: `const [activeProduct, setActiveProduct] = useState<Product | null>(null)` — pass `setActiveProduct` as `onProductClick` to CategoryShowcase and ProductFeature.
-
----
-
-## 6. Components
-
-### 6.1 SiteNav
-
-- Container: `fixed top-0 w-full z-50 bg-background/95 backdrop-blur-sm`
-- Inner: `max-w-7xl mx-auto px-6 h-[100px] grid grid-cols-3 items-center`
-
-Three columns:
-1. **Left — nav links** `['产品系列', '技术规格', '应用场景']`
-   - Each `<a>`: `text-[11px] tracking-[2px] uppercase text-foreground/70 hover:text-foreground transition-colors duration-300 group relative`
-   - Underline: `absolute bottom-0 left-0 w-full h-px bg-foreground scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-400` (CSS group-hover is fine here — no scale on the element itself)
-2. **Center — brand** `<a href="/">AutoRadar</a>`: `text-[16px] tracking-[4px] uppercase font-light text-foreground`, `text-center`
-3. **Right — CTA** "联系我们" `href="#contact"`, same style as nav links, `justify-end`
-
-Entry: `motion.header` `opacity: 0→1`, duration 0.6s.
-
----
-
-### 6.2 SiteHero
-
-```
-<section relative min-h-screen bg-background flex items-center justify-center pt-16 overflow-hidden>
-  <ASCIIBeamsCanvas />
-  <div /* radial gradient overlay */ />
-  <motion.div /* content */ />
-</section>
-```
-
-**Radial gradient overlay** — `pointer-events-none absolute inset-0`, inline style:
-```
-background: radial-gradient(ellipse 70% 55% at 50% 40%, oklch(99% 0 0) 30%, oklch(99% 0 0 / 0) 100%)
-```
-This fades the canvas to white at center, keeping title text legible.
-
-**Content** — `motion.div relative z-10 text-center mx-auto px-6 space-y-8`, `opacity:0,y:20→1,0`, duration 0.8s:
-- Eyebrow: `text-[11px] tracking-[4px] uppercase text-muted-foreground` — "Automotive Radar · Precision Components"
-- H1: `font-light tracking-[-1px] text-foreground leading-tight`, `fontSize: clamp(48px, 6vw, 80px)` — "精密雷达感知<br/>驱动智驾未来"
-- Body: `text-[15px] font-light text-foreground/70 leading-relaxed whitespace-nowrap` — "专注汽车雷达核心部件研发与制造，以毫米级精度重新定义主动安全边界。"
-- CTAs: `flex items-center justify-center gap-8 pt-2`
-  - Primary `href="#products"`: `text-[12px] tracking-[2px] uppercase border-b border-foreground pb-0.5 text-foreground hover:text-muted-foreground transition-colors duration-300` — "浏览产品系列"
-  - Secondary `href="mailto:sales@autoradar.cn"`: same size, `text-muted-foreground border-muted-foreground`, hover → foreground — "联系销售团队"
-
----
-
-### 6.3 ASCIIBeamsCanvas — WebGL + Glyph Atlas
-
-> **Architecture:** The entire animation runs on the GPU. Do NOT use Canvas 2D `fillText` in a render loop — that causes ~14k–22k main-thread draw calls per frame and will visibly jank. Use WebGL with a pre-rendered glyph atlas texture instead.
-
-**Rendering pipeline:**
-1. `buildGlyphAtlas()` — render all chars once to a Canvas 2D; upload as WebGL `TEXTURE_2D`
-2. Full-screen quad, one `gl.drawArrays` per animation frame
-3. Fragment shader: FBM domain warp → character selection → atlas sample → output pixel
-
-#### 6.3.1 Constants
-
-```ts
-const CHARS = ['.', ':', '-', '=', '+', '*', '#', '%', '@', '0', '1']
+const CHARS      = ['.', ':', '-', '=', '+', '*', '#', '%', '@', '0', '1']
 const CHAR_COUNT = 11
-const CELL_W = 8, CELL_H = 12   // CSS pixels
-const FONT_SIZE = 9              // px
-const ATLAS_SCALE = 2            // 2× for retina
-// Atlas canvas: 176 × 24 px  (11 chars × 16px each)
-```
+const CELL_W     = 8   // CSS px
+const CELL_H     = 12  // CSS px
+const ATLAS_SCALE = 2  // render atlas at 2× for retina sharpness
 
-#### 6.3.2 Glyph Atlas
+function buildGlyphAtlas(): HTMLCanvasElement {
+  const canvas  = document.createElement('canvas')
+  canvas.width  = CHAR_COUNT * CELL_W * ATLAS_SCALE   // 176 px
+  canvas.height = CELL_H * ATLAS_SCALE                  // 24 px
+  const ctx = canvas.getContext('2d')!
+  ctx.fillStyle    = '#ffffff'
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  ctx.font         = `${9 * ATLAS_SCALE}px "Geist Mono", ui-monospace, monospace`
+  ctx.textAlign    = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillStyle    = '#000000'
+  CHARS.forEach((ch, i) =>
+    ctx.fillText(ch, (i + 0.5) * CELL_W * ATLAS_SCALE, (CELL_H * ATLAS_SCALE) / 2)
+  )
+  return canvas
+}
 
-```
-canvas.width = 176, canvas.height = 24
-ctx.fillStyle = '#ffffff'; ctx.fillRect(full)
-ctx.font = '18px "Geist Mono", ui-monospace, monospace'  // FONT_SIZE * ATLAS_SCALE
-ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#000000'
-for each char i: ctx.fillText(char, (i + 0.5) * 16, 12)
-```
+// Vertex shader — full-screen quad passthrough
+const VERT_SRC = `
+attribute vec2 a_position;
+void main() { gl_Position = vec4(a_position, 0.0, 1.0); }
+`
 
-#### 6.3.3 WebGL Setup
-
-```ts
-// REQUIRED — before texImage2D:
-gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
-// Canvas 2D origin: top-left. WebGL texture v=0: bottom-left.
-// This flag corrects the Y-axis so atlasV = cellFrac.y works without manual inversion.
-
-gl.texImage2D(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, atlasCanvas)
-gl.texParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR)
-gl.texParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR)
-gl.texParameteri(TEXTURE_2D, TEXTURE_WRAP_S, CLAMP_TO_EDGE)
-gl.texParameteri(TEXTURE_2D, TEXTURE_WRAP_T, CLAMP_TO_EDGE)
-gl.uniform1i(uAtlas, 0)
-```
-
-Uniforms: `u_time` (float s), `u_resolution` (vec2 physical px), `u_dpr` (float), `u_atlas` (sampler2D unit 0).
-
-Resize (via ResizeObserver on the canvas element):
-```ts
-const dpr = window.devicePixelRatio || 1
-canvas.width  = canvas.offsetWidth  * dpr
-canvas.height = canvas.offsetHeight * dpr
-gl.viewport(0, 0, canvas.width, canvas.height)
-gl.uniform1f(uDpr, dpr)
-```
-
-Draw loop: set `u_time` and `u_resolution`, call `gl.drawArrays(TRIANGLE_STRIP, 0, 4)`, then `requestAnimationFrame`.
-
-Cleanup: `cancelAnimationFrame` + `ro.disconnect()` in `useEffect` return.
-
-#### 6.3.4 Vertex Shader
-
-Full-screen quad passthrough. Attribute `a_position`. Buffer: `[-1,-1, 1,-1, -1,1, 1,1]`.
-
-#### 6.3.5 Fragment Shader — copy verbatim
-
-```glsl
+// Fragment shader — DO NOT MODIFY — mathematical precision required
+const FRAG_SRC = `
 precision mediump float;
 uniform float     u_time;
 uniform vec2      u_resolution;
@@ -352,8 +287,7 @@ float hash(vec2 p) {
 }
 
 float vnoise(vec2 p) {
-  vec2 i = floor(p);
-  vec2 f = fract(p);
+  vec2 i = floor(p), f = fract(p);
   vec2 u = f*f*f*(f*(f*6.0-15.0)+10.0);
   return mix(mix(hash(i),           hash(i+vec2(1,0)), u.x),
              mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), u.x), u.y);
@@ -361,7 +295,7 @@ float vnoise(vec2 p) {
 
 float fbm(vec2 p) {
   float v = 0.0, amp = 0.5;
-  mat2 rot = mat2(0.8, -0.6, 0.6, 0.8);
+  mat2 rot = mat2(0.8,-0.6, 0.6,0.8);
   for (int i = 0; i < 4; i++) {
     v   += amp * vnoise(p);
     p    = rot * p * 2.0;
@@ -385,261 +319,631 @@ void main() {
   float vx = (cellIdx.x / nCells.x) * aspect;
   float vy =  cellIdx.y / nCells.y;
 
-  /* Domain-warped FBM
-     Layer 1 FBM output offsets the input to Layer 2,
-     producing Unicorn Studio-style non-linear organic motion.
-     Opposite signs on wx/wy warp offset create swirl rather than shear. */
   float t    = u_time * 0.12;
   float px   = vx * 2.2;
   float py   = vy * 2.2;
   float warp = fbm(vec2(px + t*0.18, py + t*0.12)) - 0.5;
-  float wx   = px + warp * 1.8 + t * 0.28;
-  float wy   = py - warp * 1.4 + t * 0.18;
+  float wx   = px + warp*1.8 + t*0.28;
+  float wy   = py - warp*1.4 + t*0.18;
   float raw  = fbm(vec2(wx, wy));
 
-  /* Contrast shaping:
-     smoothstep low=0.18 → ~70% of cells receive a character
-     pow exponent 1.8 → peak area stays visible, not over-concentrated */
   float s      = smoothstep(0.18, 0.72, raw);
   float shaped = pow(s, 1.8);
 
   vec3 bg = vec3(0.992);
-  if (shaped <= 0.01) {
-    gl_FragColor = vec4(bg, 1.0);
-    return;
-  }
+  if (shaped <= 0.01) { gl_FragColor = vec4(bg, 1.0); return; }
 
   float charIdx  = min(floor(shaped * CHAR_N), CHAR_N - 1.0);
   float dotAlpha = shaped * 0.32;
-
-  /* Atlas is tiled horizontally: char i occupies u ∈ [i/N, (i+1)/N]
-     UNPACK_FLIP_Y = true means v=cellFrac.y is correct without manual flip */
-  float atlasU = (charIdx + cellFrac.x) / CHAR_N;
-  float atlasV = cellFrac.y;
-  float ink    = 1.0 - texture2D(u_atlas, vec2(atlasU, atlasV)).r;
+  float atlasU   = (charIdx + cellFrac.x) / CHAR_N;
+  float atlasV   = cellFrac.y;
+  float ink      = 1.0 - texture2D(u_atlas, vec2(atlasU, atlasV)).r;
 
   gl_FragColor = vec4(mix(bg, vec3(0.0), ink * dotAlpha), 1.0);
 }
-```
+`
 
-**JSX:** `<canvas ref={canvasRef} className="pointer-events-none absolute inset-0 w-full h-full" aria-hidden="true" />`
+function ASCIIBeamsCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
 
----
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const gl = canvas.getContext('webgl')
+    if (!gl) return
 
-### 6.4 CategoryShowcase
+    function compile(type: number, src: string) {
+      const s = gl!.createShader(type)!
+      gl!.shaderSource(s, src)
+      gl!.compileShader(s)
+      if (!gl!.getShaderParameter(s, gl!.COMPILE_STATUS))
+        console.error('[ASCII] shader error:', gl!.getShaderInfoLog(s))
+      return s
+    }
 
-Section: `id="products" bg-background py-24`
+    const prog = gl.createProgram()!
+    gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT_SRC))
+    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG_SRC))
+    gl.linkProgram(prog)
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS))
+      console.error('[ASCII] link error:', gl.getProgramInfoLog(prog))
+    gl.useProgram(prog)
 
-Header block (`max-w-7xl mx-auto px-6 mb-12`):
-- Eyebrow: `text-[11px] tracking-[3px] uppercase text-muted-foreground` — "Products"
-- H2: `text-2xl font-light tracking-tight` — "产品系列"
+    const buf = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW)
+    const aPos = gl.getAttribLocation(prog, 'a_position')
+    gl.enableVertexAttribArray(aPos)
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0)
 
-Grid (`max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-0.5`), wrapped in `motion.div whileInView opacity:0,y:16→1,0 duration:0.6s`.
+    const uTime  = gl.getUniformLocation(prog, 'u_time')
+    const uRes   = gl.getUniformLocation(prog, 'u_resolution')
+    const uDpr   = gl.getUniformLocation(prog, 'u_dpr')
+    const uAtlas = gl.getUniformLocation(prog, 'u_atlas')
 
-Show **7 products** (one representative per category):
+    // Upload glyph atlas — UNPACK_FLIP_Y corrects canvas (top-left) vs WebGL (bottom-left) Y origin
+    const atlasCanvas = buildGlyphAtlas()
+    const tex = gl.createTexture()
+    gl.activeTexture(gl.TEXTURE0)
+    gl.bindTexture(gl.TEXTURE_2D, tex)
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, atlasCanvas)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+    gl.uniform1i(uAtlas, 0)
 
-| Category | ID |
-|----------|----|
-| 传感器 | RF-7702P |
-| 核心处理部件 | AR-PJ003 |
-| 发射接收部件 | AR-PJ007 |
-| 激光雷达 | AR-LR-001 |
-| 毫米波雷达 | AR-MW-001 |
-| 组合导航系统 | INS-001 |
-| 机器人控制器 | RC-100L |
+    let animId: number
+    const start = performance.now()
 
-**Each item** — `motion.button` with `initial="rest" animate="rest" whileHover="hover"` `text-left w-full`:
-- First item (`i === 0`): `col-span-2`
+    function resize() {
+      const dpr = window.devicePixelRatio || 1
+      canvas!.width  = canvas!.offsetWidth  * dpr
+      canvas!.height = canvas!.offsetHeight * dpr
+      gl!.viewport(0, 0, canvas!.width, canvas!.height)
+      gl!.uniform1f(uDpr, dpr)
+    }
 
-Image container:
-- First: `aspect-[3/2]` + `backgroundColor: '#F7F7F7'` (inline, not Tailwind)
-- Others: `aspect-[3/4] bg-muted`
-- Add `overflow-hidden relative`
-- Child: `motion.img object-contain w-full h-full`, variants `{ rest: { scale: 1 }, hover: { scale: 1.04 } }`, transition `duration:0.28 ease:[0.45,0,0.55,1]`
+    function draw() {
+      gl!.uniform1f(uTime, (performance.now() - start) / 1000)
+      gl!.uniform2f(uRes, canvas!.width, canvas!.height)
+      gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4)
+      animId = requestAnimationFrame(draw)
+    }
 
-Text strip: `px-1 pt-3 pb-4`
-- Category: `text-[10px] tracking-[3px] uppercase text-muted-foreground`
-- Name: `text-[14px] font-light tracking-wide text-foreground relative inline-block`
-  - Underline `motion.span`: `absolute bottom-0 left-0 h-px w-full bg-foreground`, `style={{ originX: 0 }}`, variants `{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }`, transition `duration:0.28 ease:[0.25,0.1,0.25,1]`
+    resize()
+    const ro = new ResizeObserver(resize)
+    ro.observe(canvas)
+    animId = requestAnimationFrame(draw)
 
----
+    return () => { cancelAnimationFrame(animId); ro.disconnect() }
+  }, [])
 
-### 6.5 QuoteSection
+  return (
+    <canvas
+      ref={canvasRef}
+      className="pointer-events-none absolute inset-0 w-full h-full"
+      aria-hidden="true"
+    />
+  )
+}
 
-Section: `bg-background py-20`
+// ─────────────────────────────────────────────────────────────
+// SITENAV
+// ─────────────────────────────────────────────────────────────
 
-Single `motion.p` centered (`max-w-7xl mx-auto px-6 text-center`), `whileInView opacity:0,y:12→1,0 duration:0.8s`:
-- Text: "感知每一毫米的精度"
-- Style: `font-light tracking-[-1px] text-foreground/80`, `fontSize: clamp(32px, 5vw, 64px)`
+function SiteNav() {
+  return (
+    <motion.header
+      className="fixed top-0 w-full z-50 bg-background/95 backdrop-blur-sm"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6, ease: [0.165, 0.84, 0.44, 1] as const }}
+    >
+      <div className="max-w-7xl mx-auto px-6 h-[100px] grid grid-cols-3 items-center">
+        <nav className="flex items-center gap-8">
+          {['产品系列', '技术规格', '应用场景'].map((label) => (
+            <a
+              key={label}
+              href="#"
+              className="group relative text-[11px] tracking-[2px] uppercase text-foreground/70 hover:text-foreground transition-colors duration-300"
+            >
+              {label}
+              <span className="absolute bottom-0 left-0 w-full h-px bg-foreground scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-400" />
+            </a>
+          ))}
+        </nav>
+        <div className="text-center">
+          <a href="/" className="text-[16px] tracking-[4px] uppercase font-light text-foreground">
+            AutoRadar
+          </a>
+        </div>
+        <div className="flex justify-end">
+          <a
+            href="#contact"
+            className="group relative text-[11px] tracking-[2px] uppercase text-foreground/70 hover:text-foreground transition-colors duration-300"
+          >
+            联系我们
+            <span className="absolute bottom-0 left-0 w-full h-px bg-foreground scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-400" />
+          </a>
+        </div>
+      </div>
+    </motion.header>
+  )
+}
 
----
+// ─────────────────────────────────────────────────────────────
+// SITEHERO
+// ─────────────────────────────────────────────────────────────
 
-### 6.6 ProductFeature
-
-Section: `bg-card py-24`
-
-Show **5 products** in order: `['RF-7701L', 'AR-PJ005', 'IR-LR-001', 'IR-MW-006', 'INS-005']`
-
-Each row — `motion.div whileInView opacity:0,y:16→1,0 duration:0.6s`:
-```
-grid lg:grid-cols-[6fr_4fr]
-border-b border-border/20
-relative overflow-hidden
-```
-Odd rows (index 1, 3) reverse columns: `lg:[&>*:first-child]:order-2 lg:[&>*:last-child]:order-1`
-
-**Decorative background number** (`position:absolute z-0`):
-- `font-bold text-foreground opacity-[0.035] leading-none`, `fontSize: 180px`
-- `bottom: -20px`, right-aligned for even rows, left-aligned for odd rows
-- Text: `product.id.replace('AR-', '')` — produces e.g. "PJ005"
-
-**Image side** (`relative z-10 overflow-hidden bg-background min-h-[400px]`):
-- `<button>` fills with `absolute inset-0 w-full h-full block`, clicking → `onProductClick(product)`
-- `<img>` with `object-cover w-full h-full`
-
-**Text side** (`relative z-10 px-12 lg:px-20 py-[200px] flex flex-col justify-center space-y-6 bg-card`):
-1. Eyebrow: `text-[10px] tracking-[3px] uppercase text-muted-foreground` — "{code} · {category}"
-2. Name: `font-light tracking-tight uppercase leading-tight text-pretty`, `fontSize: clamp(24px, 2.4vw, 38px)`
-3. Params table: `border-t border-border`, first **4** params from `parseKeyParams(product.keyParams).slice(0, 4)`
-   - Row: `flex justify-between items-start border-b border-border py-4 gap-4`
-   - Label: `text-[11px] leading-[1.5] tracking-[2px] uppercase text-muted-foreground shrink-0`
-   - Value: `text-[13px] leading-[1.5] font-light text-foreground text-right`
-4. CTAs: `pt-2 flex items-center gap-8`
-   - "查看详情": `text-[14px] tracking-[2px] uppercase border-b border-foreground pb-px text-foreground hover:text-muted-foreground hover:border-muted-foreground transition-colors duration-300`
-   - "询价咨询": `<a href="mailto:sales@autoradar.cn?subject=询价：{name}（{code}）">`, same size, starts muted, hover → foreground
-
----
-
-### 6.7 ContactSection
-
-Section: `id="contact" bg-background py-24 border-t border-border/20`
-
-Content: `max-w-2xl mx-auto px-6 text-center space-y-8`, `motion.div whileInView opacity:0,y:16→1,0 duration:0.6s`:
-- Eyebrow: `text-[11px] tracking-[3px] uppercase text-muted-foreground` — "Contact"
-- H2: `text-2xl font-light tracking-tight` — "需要报价或技术咨询？"
-- Body: `text-[14px] text-muted-foreground font-light leading-relaxed` — "我们的销售工程师团队将在一个工作日内回复，提供专属的技术方案与报价。"
-- Links: `flex justify-center gap-8 pt-2`
-  - Primary `href="mailto:sales@autoradar.cn"`: `text-[12px] tracking-[2px] uppercase border-b border-foreground pb-px text-foreground` hover → muted — "发送邮件咨询"
-  - Secondary `href="tel:+86-400-000-0000"`: same size, `text-muted-foreground border-muted-foreground`, hover → foreground — "电话：400-000-0000"
-  - Both: `transition-colors duration-300`
-
----
-
-### 6.8 SiteFooter
-
-```
-<footer border-t border-border/20 py-12>
-  <div max-w-7xl mx-auto px-6 flex justify-between items-end>
-    <div space-y-1>
-      "AutoRadar"                          text-[12px] tracking-[3px] uppercase font-light text-foreground
-      "汽车雷达核心部件 · 精密感知技术"    text-[11px] text-muted-foreground
-    </div>
-    <div text-right space-y-1>
-      "© 2026 AutoRadar. All rights reserved."    text-[11px] text-muted-foreground
-      "数据来源：飞书多维表格 · 产品管理"         text-[11px] text-muted-foreground/60
-    </div>
-  </div>
-</footer>
-```
-
----
-
-### 6.9 ProductModal
-
-```tsx
-import { Dialog } from '@base-ui-components/react/dialog'
-import { motion } from 'motion/react'
-
-<Dialog.Root open={product !== null} onOpenChange={(open) => { if (!open) onClose() }}>
-  <Dialog.Portal>
-    <Dialog.Backdrop className="fixed inset-0 bg-black/50 z-[60]" />
-    <Dialog.Popup className="fixed inset-0 z-[61] flex items-center justify-center p-4 md:p-10 overflow-y-auto">
-      {product && (
-        <motion.div
-          className="bg-background w-full max-w-5xl max-h-[92vh] overflow-y-auto"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.165, 0.84, 0.44, 1] }}
+function SiteHero() {
+  return (
+    <section className="relative min-h-screen bg-background flex items-center justify-center pt-16 overflow-hidden">
+      <ASCIIBeamsCanvas />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse 70% 55% at 50% 40%, oklch(99% 0 0) 30%, oklch(99% 0 0 / 0) 100%)',
+        }}
+      />
+      <motion.div
+        className="relative z-10 text-center mx-auto px-6 space-y-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
+      >
+        <p className="text-[11px] tracking-[4px] uppercase text-muted-foreground">
+          Automotive Radar · Precision Components
+        </p>
+        <h1
+          className="font-light tracking-[-1px] text-foreground leading-tight"
+          style={{ fontSize: 'clamp(48px, 6vw, 80px)' }}
         >
+          精密雷达感知
+          <br />
+          驱动智驾未来
+        </h1>
+        <p className="text-[15px] font-light text-foreground/70 leading-relaxed whitespace-nowrap">
+          专注汽车雷达核心部件研发与制造，以毫米级精度重新定义主动安全边界。
+        </p>
+        <div className="flex items-center justify-center gap-8 pt-2">
+          <a
+            href="#products"
+            className="text-[12px] tracking-[2px] uppercase border-b border-foreground pb-0.5 text-foreground hover:text-muted-foreground transition-colors duration-300"
+          >
+            浏览产品系列
+          </a>
+          <a
+            href="mailto:sales@autoradar.cn"
+            className="text-[12px] tracking-[2px] uppercase text-muted-foreground border-b border-muted-foreground pb-0.5 hover:text-foreground hover:border-foreground transition-colors duration-300"
+          >
+            联系销售团队
+          </a>
+        </div>
+      </motion.div>
+    </section>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────
+// CATEGORYSHOWCASE
+// Displays one representative product per category, in the order
+// defined below. If a category has no products, it is skipped.
+// ─────────────────────────────────────────────────────────────
+
+const CATEGORY_ORDER: ProductCategory[] = [
+  '传感器', '核心处理部件', '发射接收部件',
+  '激光雷达', '毫米波雷达', '组合导航系统', '机器人控制器',
+]
+
+function CategoryShowcase({
+  products,
+  onProductClick,
+}: {
+  products: Product[]
+  onProductClick: (p: Product) => void
+}) {
+  const showcaseProducts = CATEGORY_ORDER
+    .map((cat) => products.find((p) => p.category === cat))
+    .filter((p): p is Product => p !== undefined)
+
+  return (
+    <section id="products" className="bg-background py-24">
+      <div className="max-w-7xl mx-auto px-6 mb-12 space-y-2">
+        <p className="text-[11px] tracking-[3px] uppercase text-muted-foreground">Products</p>
+        <h2 className="text-2xl font-light tracking-tight text-foreground">产品系列</h2>
+      </div>
+      <motion.div
+        className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-0.5"
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6, ease: [0.165, 0.84, 0.44, 1] as const }}
+      >
+        {showcaseProducts.map((product, i) => (
+          <motion.button
+            key={product.id}
+            onClick={() => onProductClick(product)}
+            className={`flex flex-col bg-background cursor-pointer text-left w-full${i === 0 ? ' col-span-2' : ''}`}
+            initial="rest"
+            whileHover="hover"
+            animate="rest"
+          >
+            <div
+              className={`relative overflow-hidden${i === 0 ? ' aspect-[3/2]' : ' aspect-[3/4] bg-muted'}`}
+              style={i === 0 ? { backgroundColor: '#F7F7F7' } : undefined}
+            >
+              {product.image ? (
+                <motion.img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-contain"
+                  variants={{ rest: { scale: 1 }, hover: { scale: 1.04 } }}
+                  transition={{ duration: 0.28, ease: [0.45, 0, 0.55, 1] as const }}
+                />
+              ) : (
+                <div className="w-full h-full bg-muted" />
+              )}
+            </div>
+            <div className="px-1 pt-3 pb-4 space-y-0.5">
+              <p className="text-[10px] tracking-[3px] uppercase text-muted-foreground">{product.category}</p>
+              <p className="text-[14px] font-light text-foreground tracking-wide relative inline-block">
+                {product.name}
+                <motion.span
+                  className="absolute bottom-0 left-0 h-px w-full bg-foreground"
+                  style={{ originX: 0 }}
+                  variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+                  transition={{ duration: 0.28, ease: [0.25, 0.1, 0.25, 1] as const }}
+                />
+              </p>
+            </div>
+          </motion.button>
+        ))}
+      </motion.div>
+    </section>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────
+// QUOTESECTION
+// ─────────────────────────────────────────────────────────────
+
+function QuoteSection() {
+  return (
+    <section className="bg-background py-20">
+      <div className="max-w-7xl mx-auto px-6 text-center">
+        <motion.p
+          className="font-light tracking-[-1px] text-foreground/80"
+          style={{ fontSize: 'clamp(32px, 5vw, 64px)' }}
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.8, ease: [0.165, 0.84, 0.44, 1] as const }}
+        >
+          感知每一毫米的精度
+        </motion.p>
+      </div>
+    </section>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────
+// PRODUCTFEATURE
+// Shows one product per featured category, left-right alternating.
+// Image col : text col = 8fr : 6fr
+// ─────────────────────────────────────────────────────────────
+
+const FEATURED_CATEGORIES: ProductCategory[] = [
+  '传感器', '核心处理部件', '激光雷达', '毫米波雷达', '组合导航系统',
+]
+
+function ProductFeature({
+  products,
+  onProductClick,
+}: {
+  products: Product[]
+  onProductClick: (p: Product) => void
+}) {
+  const featured = FEATURED_CATEGORIES
+    .map((cat) => products.find((p) => p.category === cat))
+    .filter((p): p is Product => p !== undefined)
+
+  return (
+    <section className="bg-card py-24">
+      <div className="max-w-7xl mx-auto px-6 space-y-0">
+        {featured.map((product, i) => {
+          const isReversed = i % 2 === 1
+          const bgNum = product.id.replace('AR-', '')
+          return (
+            <motion.div
+              key={product.id}
+              className={`relative overflow-hidden grid lg:grid-cols-[8fr_6fr] border-b border-border/20${isReversed ? ' lg:[&>*:first-child]:order-2 lg:[&>*:last-child]:order-1' : ''}`}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.6, ease: [0.165, 0.84, 0.44, 1] as const }}
+            >
+              <span
+                className="absolute select-none pointer-events-none font-bold text-foreground opacity-[0.035] z-0 leading-none"
+                style={{
+                  fontSize: '180px',
+                  bottom: '-20px',
+                  right: isReversed ? 'auto' : '-20px',
+                  left: isReversed ? '-20px' : 'auto',
+                }}
+              >
+                {bgNum}
+              </span>
+              <div className="relative z-10 overflow-hidden bg-background min-h-[400px]">
+                <button
+                  className="w-full h-full block absolute inset-0"
+                  onClick={() => onProductClick(product)}
+                >
+                  {product.image ? (
+                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-muted" />
+                  )}
+                </button>
+              </div>
+              <div className="relative z-10 px-12 lg:px-20 py-[200px] flex flex-col justify-center space-y-6 bg-card">
+                <p className="text-[10px] tracking-[3px] uppercase text-muted-foreground">
+                  {product.code} · {product.category}
+                </p>
+                <h3
+                  className="font-light tracking-tight uppercase text-foreground leading-tight text-pretty"
+                  style={{ fontSize: 'clamp(24px, 2.4vw, 38px)' }}
+                >
+                  {product.name}
+                </h3>
+                <div className="border-t border-border">
+                  {parseKeyParams(product.keyParams).slice(0, 4).map((param) => (
+                    <div key={param.label} className="flex justify-between items-start border-b border-border py-4 gap-4">
+                      <span className="text-[11px] leading-[1.5] tracking-[2px] uppercase text-muted-foreground shrink-0">
+                        {param.label}
+                      </span>
+                      <span className="text-[13px] leading-[1.5] font-light text-foreground text-right">
+                        {param.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="pt-2 flex items-center gap-8">
+                  <button
+                    onClick={() => onProductClick(product)}
+                    className="text-[14px] tracking-[2px] uppercase border-b border-foreground pb-px text-foreground hover:text-muted-foreground hover:border-muted-foreground transition-colors duration-300"
+                  >
+                    查看详情
+                  </button>
+                  <a
+                    href={`mailto:sales@autoradar.cn?subject=询价：${product.name}（${product.code}）`}
+                    className="text-[14px] tracking-[2px] uppercase text-muted-foreground border-b border-muted-foreground pb-px hover:text-foreground hover:border-foreground transition-colors duration-300"
+                  >
+                    询价咨询
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────
+// CONTACTSECTION
+// ─────────────────────────────────────────────────────────────
+
+function ContactSection() {
+  return (
+    <section id="contact" className="bg-background py-24 border-t border-border/20">
+      <motion.div
+        className="max-w-2xl mx-auto px-6 text-center space-y-8"
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6, ease: [0.165, 0.84, 0.44, 1] as const }}
+      >
+        <p className="text-[11px] tracking-[3px] uppercase text-muted-foreground">Contact</p>
+        <h2 className="text-2xl font-light tracking-tight text-foreground">需要报价或技术咨询？</h2>
+        <p className="text-[14px] text-muted-foreground font-light leading-relaxed">
+          我们的销售工程师团队将在一个工作日内回复，提供专属的技术方案与报价。
+        </p>
+        <div className="flex justify-center gap-8 pt-2">
+          <a
+            href="mailto:sales@autoradar.cn"
+            className="text-[12px] tracking-[2px] uppercase border-b border-foreground pb-px text-foreground hover:text-muted-foreground hover:border-muted-foreground transition-colors duration-300"
+          >
+            发送邮件咨询
+          </a>
+          <a
+            href="tel:+86-400-000-0000"
+            className="text-[12px] tracking-[2px] uppercase text-muted-foreground border-b border-muted-foreground pb-px hover:text-foreground hover:border-foreground transition-colors duration-300"
+          >
+            电话：400-000-0000
+          </a>
+        </div>
+      </motion.div>
+    </section>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────
+// SITEFOOTER
+// ─────────────────────────────────────────────────────────────
+
+function SiteFooter() {
+  return (
+    <footer className="border-t border-border/20 py-12">
+      <div className="max-w-7xl mx-auto px-6 flex justify-between items-end">
+        <div className="space-y-1">
+          <p className="text-[12px] tracking-[3px] uppercase font-light text-foreground">AutoRadar</p>
+          <p className="text-[11px] text-muted-foreground">汽车雷达核心部件 · 精密感知技术</p>
+        </div>
+        <div className="text-right space-y-1">
+          <p className="text-[11px] text-muted-foreground tracking-wide">© 2026 AutoRadar. All rights reserved.</p>
+          <p className="text-[11px] text-muted-foreground/60">数据来源：飞书多维表格 · 产品管理</p>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────
+// PRODUCTMODAL
+// ─────────────────────────────────────────────────────────────
+
+function ProductModal({
+  product,
+  onClose,
+}: {
+  product: Product | null
+  onClose: () => void
+}) {
+  return (
+    <Dialog.Root open={product !== null} onOpenChange={(open) => { if (!open) onClose() }}>
+      <Dialog.Portal>
+        <Dialog.Backdrop className="fixed inset-0 bg-black/50 z-[60]" />
+        <Dialog.Popup className="fixed inset-0 z-[61] flex items-center justify-center p-4 md:p-10 overflow-y-auto">
+          {product && (
+            <motion.div
+              className="bg-background w-full max-w-5xl max-h-[92vh] overflow-y-auto"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: [0.165, 0.84, 0.44, 1] as const }}
+            >
+              {/* Sticky header */}
+              <div className="sticky top-0 z-10 bg-background px-10 md:px-14 pt-10 pb-7 flex items-start justify-between border-b border-border/20">
+                <div className="space-y-1.5">
+                  <p className="text-[10px] tracking-[3px] uppercase text-muted-foreground">
+                    {product.code} · {product.category}
+                  </p>
+                  <h2 className="text-2xl font-light tracking-tight text-foreground leading-snug">
+                    {product.name}
+                  </h2>
+                </div>
+                <Dialog.Close className="text-[11px] tracking-[2px] uppercase text-muted-foreground hover:text-foreground transition-colors duration-200 mt-1 shrink-0 ml-8">
+                  关闭
+                </Dialog.Close>
+              </div>
+
+              {/* Body */}
+              <div className="grid md:grid-cols-2">
+                {/* Image panel */}
+                <div className="bg-card p-10 flex items-center justify-center min-h-[380px]">
+                  {product.image ? (
+                    <img src={product.image} alt={product.name} className="w-full max-h-[440px] object-contain" />
+                  ) : (
+                    <div className="w-full h-[440px] bg-muted" />
+                  )}
+                </div>
+
+                {/* Content panel */}
+                <div className="px-10 md:px-14 py-14 flex flex-col gap-10">
+                  <p className="text-[13px] text-muted-foreground font-light leading-relaxed">
+                    {product.tagline.split('。')[0]}。
+                  </p>
+
+                  {parseKeyParams(product.keyParams).length > 0 && (
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-0 border-t border-border">
+                      {parseKeyParams(product.keyParams).map((param) => (
+                        <div key={param.label} className="py-3 border-b border-border/40">
+                          <p className="text-[10px] tracking-[2px] uppercase text-muted-foreground leading-none mb-2.5">
+                            {param.label}
+                          </p>
+                          <p className="text-[14px] font-light text-foreground leading-snug">
+                            {param.value}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div>
+                    <p className="text-[10px] tracking-[2px] uppercase text-muted-foreground">参考价格</p>
+                    <p className="text-[18px] font-light text-foreground mt-1">
+                      ¥{product.price.toLocaleString()}
+                    </p>
+                  </div>
+
+                  <div className="flex gap-8 border-t border-border/30 pt-6">
+                    {product.dataSheetUrl && (
+                      <a
+                        href={product.dataSheetUrl}
+                        download
+                        className="text-[11px] tracking-[2px] uppercase text-muted-foreground border-b border-muted-foreground pb-px hover:text-foreground hover:border-foreground transition-colors duration-200"
+                      >
+                        下载资料
+                      </a>
+                    )}
+                    <a
+                      href={`mailto:sales@autoradar.cn?subject=询价：${product.name}（${product.code}）`}
+                      className="text-[11px] tracking-[2px] uppercase text-foreground border-b border-foreground pb-px hover:text-muted-foreground hover:border-muted-foreground transition-colors duration-200"
+                    >
+                      询价咨询
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────
+// APP
+// ─────────────────────────────────────────────────────────────
+
+export default function App() {
+  const [products, setProducts]           = useState<Product[]>([])
+  const [activeProduct, setActiveProduct] = useState<Product | null>(null)
+
+  useEffect(() => {
+    fetchAllProducts().then(setProducts).catch(console.error)
+  }, [])
+
+  return (
+    <div className="min-h-screen bg-background text-foreground antialiased">
+      <SiteNav />
+      <main>
+        <SiteHero />
+        <CategoryShowcase products={products} onProductClick={setActiveProduct} />
+        <QuoteSection />
+        <ProductFeature products={products} onProductClick={setActiveProduct} />
+        <ContactSection />
+      </main>
+      <SiteFooter />
+      <ProductModal product={activeProduct} onClose={() => setActiveProduct(null)} />
+    </div>
+  )
+}
 ```
-
-**Sticky header** (`sticky top-0 z-10 bg-background px-10 md:px-14 pt-10 pb-7 flex items-start justify-between border-b border-border/20`):
-- Left (`space-y-1.5`):
-  - `text-[10px] tracking-[3px] uppercase text-muted-foreground` — "{code} · {category}"
-  - `text-2xl font-light tracking-tight text-foreground leading-snug` — product name
-- Right: `<Dialog.Close>` — `text-[11px] tracking-[2px] uppercase text-muted-foreground hover:text-foreground transition-colors duration-200 mt-1 shrink-0 ml-8` — "关闭"
-
-**Body** (`grid md:grid-cols-2`):
-
-Left panel — `bg-card p-10 flex items-center justify-center min-h-[380px]`:
-- `<img>` with `w-full max-h-[440px] object-contain`
-
-Right panel — `px-10 md:px-14 py-14 flex flex-col gap-10`:
-
-1. Tagline: `text-[13px] text-muted-foreground font-light leading-relaxed`
-   — `product.tagline.split('。')[0] + '。'`
-
-2. Params grid: `grid grid-cols-2 gap-x-6 gap-y-0 border-t border-border`
-   — all params from `parseKeyParams(product.keyParams)` (no slice limit)
-   - Cell: `py-3 border-b border-border/40`
-   - Label: `text-[10px] tracking-[2px] uppercase text-muted-foreground leading-none mb-2.5`
-   - Value: `text-[14px] font-light text-foreground leading-snug`
-
-3. Price: `<div>`
-   - Label: `text-[10px] tracking-[2px] uppercase text-muted-foreground` — "参考价格"
-   - Value: `text-[18px] font-light text-foreground mt-1` — `¥{product.price.toLocaleString()}`
-
-4. CTA row: `flex gap-8 border-t border-border/30 pt-6`
-   - "下载资料": `<a href="/datasheet.zip" download>` — `text-[11px] tracking-[2px] uppercase text-muted-foreground border-b border-muted-foreground pb-px hover:text-foreground hover:border-foreground transition-colors duration-200`
-   - "询价咨询": `<a href="mailto:sales@autoradar.cn?subject=询价：{name}（{code}）">` — `text-[11px] tracking-[2px] uppercase text-foreground border-b border-foreground pb-px hover:text-muted-foreground hover:border-muted-foreground transition-colors duration-200`
 
 ---
 
-## 7. Critical Implementation Notes
+## 4. Environment Variable
 
-### 7.1 GLSL Reserved Keywords
-`half`, `input`, `output`, `texture` are reserved in GLSL ES 1.0. Using them as variable names causes **silent shader compilation failure** — blank canvas, no runtime error unless you call `gl.getShaderInfoLog()`. Always log shader errors:
-```ts
-if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
-  console.error('shader error:', gl.getShaderInfoLog(s))
+Create `.env` in project root:
+
+```
+VITE_FEISHU_ACCESS_TOKEN=your_feishu_user_or_app_access_token
 ```
 
-### 7.2 WebGL Texture Y-Axis Flip
-Canvas 2D origin is top-left (y increases downward). WebGL texture UV origin is bottom-left (v increases upward). Call `gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)` before `texImage2D`. After that, `atlasV = cellFrac.y` in the shader is correct without any manual flip.
-
-### 7.3 Tailwind v4 — No tailwind.config.js
-All theme values live inside `@theme inline { }` in CSS. The `shadcn/ui` init writes a `shadcn/tailwind.css` file that provides component base styles. Do not create `tailwind.config.js` or `tailwind.config.ts`.
-
-### 7.4 motion/react Variant Propagation
-`whileHover="hover"` on a parent `motion.X` automatically propagates the `"hover"` variant name to all descendant `motion.X` elements that declare a `variants` prop with a `"hover"` key. No event handlers or state needed in children.
-
-### 7.5 shadcn Dialog Import Path
-```ts
-import { Dialog } from '@base-ui-components/react/dialog'
-// NOT from '@radix-ui' or 'shadcn/ui' directly
-```
+The Feishu access token is used to authenticate requests to the Base API. The product images use `tmp_url` from the attachment field response — these are temporary public URLs that do **not** require the Authorization header and can be used directly in `<img src>`.
 
 ---
 
-## 8. File Structure
+## 5. Known Pitfalls
 
-```
-src/
-  App.tsx
-  index.css
-  main.tsx
-  components/
-    SiteNav.tsx
-    SiteHero.tsx
-    ASCIIBeamsCanvas.tsx
-    CategoryShowcase.tsx
-    QuoteSection.tsx
-    ProductFeature.tsx
-    ContactSection.tsx
-    SiteFooter.tsx
-    ProductModal.tsx
-  data/
-    products.ts
-public/
-  (no product images or datasheet files — all resolved at runtime from Feishu Base)
-```
+| Issue | Cause | Fix |
+|---|---|---|
+| Blank canvas, no error | GLSL variable named `half`, `input`, or `output` — reserved keywords | Rename variable; always log `gl.getShaderInfoLog()` |
+| Characters appear upside-down | Missing `UNPACK_FLIP_Y_WEBGL` before `texImage2D` | Already in the code above — do not remove it |
+| Hover scale animation does nothing | Tailwind v4 `scale-[x]` generates CSS `scale:` not `transform: scale()` | Use `motion/react` variant propagation as shown above |
+| No products loaded | `VITE_FEISHU_ACCESS_TOKEN` not set | Add to `.env` and restart dev server |
+| Feishu API 403 on images | Using drive `+download` shortcut on bitable attachments | Use `tmp_url` from the record's attachment field directly |
