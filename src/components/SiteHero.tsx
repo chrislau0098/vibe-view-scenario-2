@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { PixelBeamsCanvas } from './PixelBeamsCanvas'
+import { ASCIIBeamsCanvas } from './ASCIIBeamsCanvas'
 
 const ease = [0.16, 1, 0.3, 1] as const
 
@@ -41,8 +41,8 @@ export function SiteHero() {
   return (
     <section className="relative min-h-screen bg-background flex items-center justify-center pt-16 overflow-hidden">
 
-      {/* Pixel Beams — WebGL dot-grid with animated beam intensity */}
-      <PixelBeamsCanvas />
+      {/* ASCII Beams — Canvas 2D character grid with animated FBM beam intensity */}
+      <ASCIIBeamsCanvas />
 
       <div
         className="pointer-events-none absolute inset-0"
