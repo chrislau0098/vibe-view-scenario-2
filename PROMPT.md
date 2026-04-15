@@ -1,77 +1,29 @@
-# Design Prompt — vibe-view-scenario-2（AutoRadar 产品展示网站）
+# AutoRadar — Design Prompt for Full Site Reconstruction
 
-> 将此文件内容完整复制给另一个 LLM，作为从零重建该网站的设计指导文件。
-> 本文件基于已完成的实现编写，所有代码均已验证可运行。
-
----
-
-## 一、项目定位与风格基因
-
-**目标**：为 AutoRadar 汽车雷达部件品牌构建一个产品展示网站，风格参照 Bang & Olufsen 官网。
-
-**核心关键词**：极简奢华 · 克制 · 编辑感 · 精密工业
-
-**视觉语言**：
-- 背景纯白，大量留白，无任何有色 accent
-- 近黑文字，广泛使用全大写 + 极宽字距
-- 产品图竖向比例 3:4，无圆角，大面积展示
-- 无 box-shadow，无填充式按钮，无圆角卡片
-- 所有 CTA 均为"文字 + 底部单线"形式
-
-**破格设计（关键）**：整体严整网格中，有 3 处有意识的视觉破格，制造节奏与层次：
-1. **破格①** ProductGrid：每 10 张产品中位置 4 和 9 放大展示（col-span-2，aspect-[3/2]）
-2. **破格②** QuoteSection：ProductGrid 与 ProductFeature 之间插入全宽单行大字，制造视觉停顿
-3. **破格③** ProductFeature：超大背景编号（opacity-[0.035]）+ 不对称图文比例（3fr:2fr）
+You are a senior frontend engineer. Your task is to reconstruct a complete single-page product showcase website pixel-for-pixel from this specification. Follow every instruction precisely. Do not add features, introduce new styles, or deviate from the values given.
 
 ---
 
-## 二、技术栈
+## 1. Tech Stack
+
+Install exactly the following (do not add others):
 
 ```
-React 18 + Vite + TypeScript
-Tailwind CSS 4（@tailwindcss/vite，CSS-first，无 tailwind.config.js）
-motion（framer-motion v11+）→ import { motion } from 'motion/react'
-shadcn/ui（Tailwind v4 模式，已初始化）
-@fontsource-variable/geist（Geist Sans Variable）
-路径别名：@/ → ./src/
+react@18, vite, typescript
+tailwindcss@4 via @tailwindcss/vite  (NO tailwind.config.js — CSS-first config only)
+motion  (import { motion } from 'motion/react')
+@base-ui-components/react  (import { Dialog } from '@base-ui-components/react/dialog')
+@fontsource-variable/geist
+shadcn/ui  (Tailwind v4 mode, run: npx shadcn@latest init)
 ```
 
-**重要约束**：
-- `motion` 的 `ease` 必须用 cubic-bezier 数组，不能用字符串（TypeScript 类型不兼容）
-  ```tsx
-  transition={{ duration: 0.5, ease: [0.165, 0.84, 0.44, 1] }}  // ✅
-  transition={{ duration: 0.5, ease: 'easeOut' }}               // ❌ TS 报错
-  ```
-- Section 入场用 `whileInView`，Hero 用 `animate`
+Path alias: `@/` → `./src/` — configure in both `vite.config.ts` and `tsconfig.app.json`.
+
+`tsconfig.app.json` must include `"ignoreDeprecations": "6.0"`.
 
 ---
 
-## 三、数据模型
-
-```ts
-export interface Product {
-  id: string           // 'AR-PJ001', 'AR-LR-001', 'INS-001' 等
-  name: string         // 中文产品名
-  code: string         // 'AR - PJ001' 原始格式
-  category: '传感器' | '核心处理部件' | '发射接收部件' | '辅助设备' | '激光雷达' | '毫米波雷达' | '组合导航系统'
-  status: '上架' | '下架'
-  price: number
-  cost: number
-  stock: number
-  tagline: string      // 产品信息第一句
-  industry: string     // 应用行业
-  image: string        // '/products/AR-PJ001.jpg'
-  specs: { label: string; value: string }[]  // 4 条技术参数
-}
-
-// 导出：products（全部39款）、activeProducts（仅上架）、categories、categoryGroups
-```
-
----
-
-## 四、CSS Token 配置
-
-写入 `src/index.css` 的 `:root` 部分（保留 shadcn 添加的 chart/sidebar 等变量）：
+## 2. Global Styles — `src/index.css`
 
 ```css
 @import "tailwindcss";
@@ -82,49 +34,34 @@ export interface Product {
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-sans: 'Geist Variable', sans-serif;
-    --font-mono: 'Geist Mono', ui-monospace, monospace;
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-    --color-card: var(--card);
-    --color-card-foreground: var(--card-foreground);
-    --color-muted: var(--muted);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-secondary: var(--secondary);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-border: var(--border);
-    --color-ring: var(--ring);
-    --color-primary: var(--primary);
-    --color-primary-foreground: var(--primary-foreground);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --font-heading: var(--font-sans);
-    /* ... 保留其他 shadcn 生成的 token ... */
+  --font-sans: 'Geist Variable', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+  --color-background:       var(--background);
+  --color-foreground:       var(--foreground);
+  --color-card:             var(--card);
+  --color-card-foreground:  var(--card-foreground);
+  --color-muted:            var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border:           var(--border);
+  --color-primary:          var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
 }
 
 :root {
-    --background: oklch(99% 0 0);           /* 近纯白 */
-    --foreground: oklch(11% 0.005 60);      /* 近黑，略带暖色 */
-    --card: oklch(97.5% 0 0);               /* 极浅灰，用于区分区块 */
-    --card-foreground: oklch(11% 0.005 60);
-    --secondary: oklch(95% 0 0);
-    --secondary-foreground: oklch(11% 0.005 60);
-    --muted: oklch(95% 0 0);
-    --muted-foreground: oklch(42% 0 0);     /* 中灰，用于辅助文字 */
-    --border: oklch(90% 0 0);               /* 极淡分割线 */
-    --input: oklch(90% 0 0);
-    --primary: oklch(11% 0.005 60);
-    --primary-foreground: oklch(99% 0 0);
-    --ring: oklch(11% 0.005 60);
-    --popover: oklch(99% 0 0);
-    --popover-foreground: oklch(11% 0.005 60);
-    --accent: oklch(95% 0 0);
-    --accent-foreground: oklch(11% 0.005 60);
-    --destructive: oklch(0.577 0.245 27.325);
-    --radius: 0.125rem;   /* 极小圆角，接近直角 */
+  --background:         oklch(99% 0 0);
+  --foreground:         oklch(11% 0.005 60);
+  --card:               oklch(97.5% 0 0);
+  --card-foreground:    oklch(11% 0.005 60);
+  --muted:              oklch(95% 0 0);
+  --muted-foreground:   oklch(42% 0 0);
+  --border:             oklch(90% 0 0);
+  --input:              oklch(90% 0 0);
+  --primary:            oklch(11% 0.005 60);
+  --primary-foreground: oklch(99% 0 0);
+  --radius:             0.125rem;
 }
 
 @layer base {
@@ -133,663 +70,541 @@ export interface Product {
   html { @apply font-sans; }
 }
 
-/* 无障碍：减少动效 */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }
 ```
 
+**Design language:** near-white background (`oklch(99% 0 0)` ≈ `#FDFDFD`), near-black text, zero chroma — fully monochromatic B&O/Bang & Olufsen precision aesthetic. No accent colors, no gradients on content, no rounded corners (`radius: 0.125rem` is essentially sharp).
+
 ---
 
-## 五、页面结构
+## 3. Animation Rules (apply everywhere)
 
-```tsx
-// App.tsx
-function App() {
-  return (
-    <div className="min-h-screen bg-background text-foreground antialiased">
-      <SiteNav />
-      <main>
-        <SiteHero />
-        <ProductGrid />
-        <QuoteSection />
-        <ProductFeature />
-        <ContactSection />
-      </main>
-      <SiteFooter />
-    </div>
-  )
+- **`ease` must always be a cubic-bezier array — never a string:**
+  - Standard enter: `[0.165, 0.84, 0.44, 1]`
+  - Fast snap: `[0.45, 0, 0.55, 1]`
+  - Gentle: `[0.25, 0.1, 0.25, 1]`
+- Hero content uses `animate`. All other sections use `whileInView` with `viewport={{ once: true, margin: '-60px' }}`.
+- **Critical — Tailwind v4 hover scale incompatibility:** `scale-[x]` in Tailwind v4 generates a standalone CSS `scale:` property, not `transform: scale()`. CSS transitions on `transform` will silently fail to capture it. **All hover scale/transform animations must use `motion/react` variant propagation:**
+  - Parent button: `<motion.button initial="rest" animate="rest" whileHover="hover">`
+  - Children: `<motion.img variants={{ rest: { scale: 1 }, hover: { scale: 1.04 } }} transition={{ duration: 0.28, ease: [0.45, 0, 0.55, 1] }}>`
+  - Variant name `"hover"` propagates automatically from parent to all descendants that declare `variants`.
+
+---
+
+## 4. Data Model — `src/data/products.ts`
+
+```ts
+export type ProductCategory =
+  '传感器' | '核心处理部件' | '发射接收部件' | '辅助设备' |
+  '激光雷达' | '毫米波雷达' | '组合导航系统' | '机器人控制器'
+
+export type ProductStatusTag = '样品' | '量产' | '在售' | '停产'
+
+export interface Product {
+  id: string          // e.g. 'RF-7701L'
+  name: string        // Chinese product name
+  code: string        // Display code, e.g. 'AR - PJ003'
+  category: ProductCategory
+  status: ProductStatusTag[]
+  price: number
+  tagline: string     // Full product description (first sentence used in modal)
+  industry: string
+  image: string       // '/products/{id}.png'
+  keyParams: string   // '；'-delimited "label：value" pairs
+  detailSpecs: string
+  dataSheetUrl?: string
 }
+
+// Parses keyParams string into [{label, value}] array
+// Split by '；', for each chunk split at first '：'
+export function parseKeyParams(raw: string): { label: string; value: string }[]
+
+export function isActive(p: Product): boolean {
+  return p.status.includes('在售') && !p.status.includes('停产')
+}
+
+export const products: Product[] = [ /* 20 products */ ]
+export const activeProducts = products.filter(isActive)
+export const categories: ProductCategory[] = [ /* 8 in order */ ]
+export const categoryGroups: Record<string, Product[]> = /* grouped by category */
 ```
 
+**All 20 products** (id / name / category / price):
+
+| id | name | category | price |
+|----|------|----------|-------|
+| RF-7701L | 77GHz 毫米波雷达发射模块 Lite | 传感器 | 5182.29 |
+| RF-7702P | 77GHz 毫米波雷达发射模块 Pro | 传感器 | 8697.15 |
+| RF-7905M | 79GHz 多通道同步发射模块 Max | 传感器 | 21742.86 |
+| AR-PJ003 | 汽车雷达信号处理芯片 | 核心处理部件 | 1981.93 |
+| AR-PJ004 | 激光雷达反射镜组件 | 核心处理部件 | 3605.27 |
+| AR-PJ005 | 前碰撞预警雷达 | 核心处理部件 | 1738.60 |
+| AR-PJ006 | 车载毫米波雷达天线 | 发射接收部件 | 7792.29 |
+| AR-PJ007 | 盲点监测雷达传感器 | 发射接收部件 | 8907.15 |
+| AR-PJ008 | 汽车雷达数据传输线 | 发射接收部件 | 5242.29 |
+| AR-PJ009 | 自适应巡航雷达校准 | 辅助设备 | 4618.57 |
+| AR-LR-001 | 车规级 120° 超远距激光雷达 Pro | 激光雷达 | 22192.56 |
+| AR-LR-002 | 车规级 90° 中距激光雷达 Lite | 激光雷达 | 13555.42 |
+| AR-LR-005 | 车规级 120° 超远距增强激光雷达 Max | 激光雷达 | 42885.43 |
+| IR-LR-001 | 迷你型 360°×40° 室内导航激光雷达 Lite | 激光雷达 | 8636.85 |
+| AR-MW-001 | 车规级 77GHz 前向毫米波雷达 Pro | 毫米波雷达 | 8426.85 |
+| IR-MW-006 | 工业级 77GHz 室外避障毫米波雷达 | 毫米波雷达 | 8880.93 |
+| INS-001 | 车规级组合惯导系统 Lite | 组合导航系统 | 14294.94 |
+| INS-005 | 工业级组合惯导系统 Lite | 组合导航系统 | 16119.35 |
+| RC-100L | 入门级移动机器人控制器 Lite | 机器人控制器 | 21442.86 |
+| RC-300X | 高性能机器人控制器 Plus | 机器人控制器 | 52722.87 |
+
+Images: `public/products/{id}.png` for all 20 products. Place `public/datasheet.zip` as a static download file.
+
 ---
 
-## 六、组件完整代码
+## 5. Page Architecture — `src/App.tsx`
 
-### 6.1 SiteNav.tsx
-
-```tsx
-import { motion } from 'motion/react'
-
-const ease = [0.165, 0.84, 0.44, 1] as const
-
-export function SiteNav() {
-  return (
-    <motion.header
-      className="fixed top-0 w-full z-50 bg-background/95 backdrop-blur-sm"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6, ease }}
-    >
-      <div className="max-w-7xl mx-auto px-6 h-16 md:h-[100px] grid grid-cols-3 items-center">
-        {/* 左：导航链接 */}
-        <nav className="flex items-center gap-8">
-          {['产品系列', '技术规格', '应用场景'].map((label) => (
-            <a
-              key={label}
-              href="#"
-              className="group relative text-[11px] tracking-[2px] uppercase text-foreground/70 hover:text-foreground transition-colors duration-300"
-            >
-              {label}
-              <span className="absolute bottom-0 left-0 w-full h-px bg-foreground scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-400" />
-            </a>
-          ))}
-        </nav>
-
-        {/* 中：品牌名 */}
-        <div className="text-center">
-          <a
-            href="/"
-            className="text-[13px] tracking-[4px] uppercase font-light text-foreground"
-          >
-            AutoRadar
-          </a>
-        </div>
-
-        {/* 右：CTA */}
-        <div className="flex justify-end">
-          <a
-            href="#contact"
-            className="group relative text-[11px] tracking-[2px] uppercase text-foreground/70 hover:text-foreground transition-colors duration-300"
-          >
-            联系我们
-            <span className="absolute bottom-0 left-0 w-full h-px bg-foreground scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-400" />
-          </a>
-        </div>
-      </div>
-    </motion.header>
-  )
-}
+```
+<div min-h-screen bg-background text-foreground antialiased>
+  <SiteNav />                              ← fixed, z-50
+  <main>
+    <SiteHero />
+    <CategoryShowcase onProductClick />    ← id="products"
+    <QuoteSection />
+    <ProductFeature onProductClick />
+    <ContactSection />                     ← id="contact"
+  </main>
+  <SiteFooter />
+  <ProductModal product={activeProduct} onClose={() => setActiveProduct(null)} />
+</div>
 ```
 
+State: `const [activeProduct, setActiveProduct] = useState<Product | null>(null)` — pass `setActiveProduct` as `onProductClick` to CategoryShowcase and ProductFeature.
+
 ---
 
-### 6.2 SiteHero.tsx（含波纹动画）
+## 6. Components
 
-**波纹动画技术要点**：
-- SVG viewBox 固定为 1440×900，`preserveAspectRatio="xMidYMid slice"`
-- 每条波纹是正弦曲线路径，用三次贝塞尔控制点模拟
-- 水平位移 `x` 和透明度 `opacity` 分别配置独立的 transition，实现互不干扰的动画
-- **关键**：`scrollDist = Math.ceil(W / wavelength) * wavelength`，使滚动距离为波长的整数倍，防止无缝循环抖动
-- 7 条波纹各有不同的 y 位置、振幅、波长、滚动速度、透明度基值、初始偏移
-- 透明度呼吸：`repeatType: 'mirror'`，使用非整数倍的呼吸周期（8.3, 11.9, 7.4…），确保各波纹永不同步
-- 波纹颜色：`oklch(72% 0.04 65)`（带极淡暖色调的中灰）
-- 径向渐变遮罩：中心白色不透明 → 边缘透明，让波纹在边缘自然消散
+### 6.1 SiteNav
 
-```tsx
-import { motion } from 'motion/react'
+- Container: `fixed top-0 w-full z-50 bg-background/95 backdrop-blur-sm`
+- Inner: `max-w-7xl mx-auto px-6 h-[100px] grid grid-cols-3 items-center`
 
-const ease = [0.16, 1, 0.3, 1] as const
+Three columns:
+1. **Left — nav links** `['产品系列', '技术规格', '应用场景']`
+   - Each `<a>`: `text-[11px] tracking-[2px] uppercase text-foreground/70 hover:text-foreground transition-colors duration-300 group relative`
+   - Underline: `absolute bottom-0 left-0 w-full h-px bg-foreground scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-400` (CSS group-hover is fine here — no scale on the element itself)
+2. **Center — brand** `<a href="/">AutoRadar</a>`: `text-[16px] tracking-[4px] uppercase font-light text-foreground`, `text-center`
+3. **Right — CTA** "联系我们" `href="#contact"`, same style as nav links, `justify-end`
 
-const W = 1440
-const H = 900
-const WAVE_COLOR = 'oklch(72% 0.04 65)'
+Entry: `motion.header` `opacity: 0→1`, duration 0.6s.
 
-function scrollDist(wl: number): number {
-  // 滚动距离必须是波长的整数倍，否则无缝循环时会有位移跳跃
-  return Math.ceil(W / wl) * wl
+---
+
+### 6.2 SiteHero
+
+```
+<section relative min-h-screen bg-background flex items-center justify-center pt-16 overflow-hidden>
+  <ASCIIBeamsCanvas />
+  <div /* radial gradient overlay */ />
+  <motion.div /* content */ />
+</section>
+```
+
+**Radial gradient overlay** — `pointer-events-none absolute inset-0`, inline style:
+```
+background: radial-gradient(ellipse 70% 55% at 50% 40%, oklch(99% 0 0) 30%, oklch(99% 0 0 / 0) 100%)
+```
+This fades the canvas to white at center, keeping title text legible.
+
+**Content** — `motion.div relative z-10 text-center mx-auto px-6 space-y-8`, `opacity:0,y:20→1,0`, duration 0.8s:
+- Eyebrow: `text-[11px] tracking-[4px] uppercase text-muted-foreground` — "Automotive Radar · Precision Components"
+- H1: `font-light tracking-[-1px] text-foreground leading-tight`, `fontSize: clamp(48px, 6vw, 80px)` — "精密雷达感知<br/>驱动智驾未来"
+- Body: `text-[15px] font-light text-foreground/70 leading-relaxed whitespace-nowrap` — "专注汽车雷达核心部件研发与制造，以毫米级精度重新定义主动安全边界。"
+- CTAs: `flex items-center justify-center gap-8 pt-2`
+  - Primary `href="#products"`: `text-[12px] tracking-[2px] uppercase border-b border-foreground pb-0.5 text-foreground hover:text-muted-foreground transition-colors duration-300` — "浏览产品系列"
+  - Secondary `href="mailto:sales@autoradar.cn"`: same size, `text-muted-foreground border-muted-foreground`, hover → foreground — "联系销售团队"
+
+---
+
+### 6.3 ASCIIBeamsCanvas — WebGL + Glyph Atlas
+
+> **Architecture:** The entire animation runs on the GPU. Do NOT use Canvas 2D `fillText` in a render loop — that causes ~14k–22k main-thread draw calls per frame and will visibly jank. Use WebGL with a pre-rendered glyph atlas texture instead.
+
+**Rendering pipeline:**
+1. `buildGlyphAtlas()` — render all chars once to a Canvas 2D; upload as WebGL `TEXTURE_2D`
+2. Full-screen quad, one `gl.drawArrays` per animation frame
+3. Fragment shader: FBM domain warp → character selection → atlas sample → output pixel
+
+#### 6.3.1 Constants
+
+```ts
+const CHARS = ['.', ':', '-', '=', '+', '*', '#', '%', '@', '0', '1']
+const CHAR_COUNT = 11
+const CELL_W = 8, CELL_H = 12   // CSS pixels
+const FONT_SIZE = 9              // px
+const ATLAS_SCALE = 2            // 2× for retina
+// Atlas canvas: 176 × 24 px  (11 chars × 16px each)
+```
+
+#### 6.3.2 Glyph Atlas
+
+```
+canvas.width = 176, canvas.height = 24
+ctx.fillStyle = '#ffffff'; ctx.fillRect(full)
+ctx.font = '18px "Geist Mono", ui-monospace, monospace'  // FONT_SIZE * ATLAS_SCALE
+ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#000000'
+for each char i: ctx.fillText(char, (i + 0.5) * 16, 12)
+```
+
+#### 6.3.3 WebGL Setup
+
+```ts
+// REQUIRED — before texImage2D:
+gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
+// Canvas 2D origin: top-left. WebGL texture v=0: bottom-left.
+// This flag corrects the Y-axis so atlasV = cellFrac.y works without manual inversion.
+
+gl.texImage2D(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, atlasCanvas)
+gl.texParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR)
+gl.texParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR)
+gl.texParameteri(TEXTURE_2D, TEXTURE_WRAP_S, CLAMP_TO_EDGE)
+gl.texParameteri(TEXTURE_2D, TEXTURE_WRAP_T, CLAMP_TO_EDGE)
+gl.uniform1i(uAtlas, 0)
+```
+
+Uniforms: `u_time` (float s), `u_resolution` (vec2 physical px), `u_dpr` (float), `u_atlas` (sampler2D unit 0).
+
+Resize (via ResizeObserver on the canvas element):
+```ts
+const dpr = window.devicePixelRatio || 1
+canvas.width  = canvas.offsetWidth  * dpr
+canvas.height = canvas.offsetHeight * dpr
+gl.viewport(0, 0, canvas.width, canvas.height)
+gl.uniform1f(uDpr, dpr)
+```
+
+Draw loop: set `u_time` and `u_resolution`, call `gl.drawArrays(TRIANGLE_STRIP, 0, 4)`, then `requestAnimationFrame`.
+
+Cleanup: `cancelAnimationFrame` + `ro.disconnect()` in `useEffect` return.
+
+#### 6.3.4 Vertex Shader
+
+Full-screen quad passthrough. Attribute `a_position`. Buffer: `[-1,-1, 1,-1, -1,1, 1,1]`.
+
+#### 6.3.5 Fragment Shader — copy verbatim
+
+```glsl
+precision mediump float;
+uniform float     u_time;
+uniform vec2      u_resolution;
+uniform float     u_dpr;
+uniform sampler2D u_atlas;
+
+float hash(vec2 p) {
+  p = fract(p * vec2(0.1031, 0.1030));
+  p += dot(p, p.yx + 33.33);
+  return fract((p.x + p.y) * p.x);
 }
 
-function sinePath(y: number, amplitude: number, wavelength: number): string {
-  const scroll = scrollDist(wavelength)
-  const total  = Math.ceil((scroll + W) / wavelength) * wavelength
-  const hw = wavelength / 2
-  const qw = wavelength / 4
-  let d = `M 0 ${y}`
-  for (let x = 0; x < total; x += wavelength) {
-    d += ` C ${x + qw} ${y - amplitude} ${x + hw - qw} ${y - amplitude} ${x + hw} ${y}`
-    d += ` C ${x + hw + qw} ${y + amplitude} ${x + wavelength - qw} ${y + amplitude} ${x + wavelength} ${y}`
+float vnoise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  vec2 u = f*f*f*(f*(f*6.0-15.0)+10.0);
+  return mix(mix(hash(i),           hash(i+vec2(1,0)), u.x),
+             mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), u.x), u.y);
+}
+
+float fbm(vec2 p) {
+  float v = 0.0, amp = 0.5;
+  mat2 rot = mat2(0.8, -0.6, 0.6, 0.8);
+  for (int i = 0; i < 4; i++) {
+    v   += amp * vnoise(p);
+    p    = rot * p * 2.0;
+    amp *= 0.5;
   }
-  return d
+  return v / 0.9375;
 }
 
-const waves = [
-  { y: 0.13 * H, amp: 14, wl: 500, dur: 30, op: 0.55, del:   0, breathe: 8.3  },
-  { y: 0.26 * H, amp: 19, wl: 580, dur: 38, op: 0.40, del: -11, breathe: 11.9 },
-  { y: 0.40 * H, amp: 11, wl: 420, dur: 25, op: 0.50, del:  -5, breathe: 7.4  },
-  { y: 0.53 * H, amp: 22, wl: 540, dur: 34, op: 0.38, del: -16, breathe: 13.1 },
-  { y: 0.66 * H, amp: 16, wl: 470, dur: 32, op: 0.45, del:  -8, breathe: 9.6  },
-  { y: 0.79 * H, amp: 13, wl: 460, dur: 27, op: 0.42, del: -20, breathe: 6.8  },
-  { y: 0.92 * H, amp: 18, wl: 520, dur: 36, op: 0.38, del:  -3, breathe: 12.4 },
-]
+const float CELL_W_CSS = 8.0;
+const float CELL_H_CSS = 12.0;
+const float CHAR_N     = 11.0;
 
-export function SiteHero() {
-  return (
-    <section className="relative min-h-screen bg-background flex items-center justify-center pt-16 overflow-hidden">
+void main() {
+  float cW = CELL_W_CSS * u_dpr;
+  float cH = CELL_H_CSS * u_dpr;
+  vec2 cellIdx  = floor(gl_FragCoord.xy / vec2(cW, cH));
+  vec2 cellFrac = fract(gl_FragCoord.xy / vec2(cW, cH));
 
-      {/* 波纹 SVG 层 */}
-      <svg
-        className="pointer-events-none absolute inset-0 w-full h-full"
-        viewBox={`0 0 ${W} ${H}`}
-        preserveAspectRatio="xMidYMid slice"
-        aria-hidden="true"
-      >
-        {waves.map((w, i) => (
-          <motion.path
-            key={i}
-            d={sinePath(w.y, w.amp, w.wl)}
-            fill="none"
-            stroke={WAVE_COLOR}
-            strokeWidth={1.2}
-            initial={{ opacity: w.op * 0.4 }}
-            animate={{
-              x: [0, -scrollDist(w.wl)],
-              opacity: [w.op * 0.25, w.op * 0.65],
-            }}
-            transition={{
-              x: {
-                duration: w.dur,
-                repeat: Infinity,
-                ease: 'linear',
-                delay: w.del,
-              },
-              opacity: {
-                duration: w.breathe,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                repeatType: 'mirror',
-                delay: i * 1.1,
-              },
-            }}
-          />
-        ))}
-      </svg>
+  vec2  nCells = floor(u_resolution / vec2(cW, cH));
+  float aspect = u_resolution.x / u_resolution.y;
+  float vx = (cellIdx.x / nCells.x) * aspect;
+  float vy =  cellIdx.y / nCells.y;
 
-      {/* 径向渐变遮罩：中心不透明白色 → 边缘透明，营造柔和焦点感 */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: 'radial-gradient(ellipse 70% 55% at 50% 40%, oklch(99% 0 0) 30%, oklch(99% 0 0 / 0) 100%)',
-        }}
-      />
+  /* Domain-warped FBM
+     Layer 1 FBM output offsets the input to Layer 2,
+     producing Unicorn Studio-style non-linear organic motion.
+     Opposite signs on wx/wy warp offset create swirl rather than shear. */
+  float t    = u_time * 0.12;
+  float px   = vx * 2.2;
+  float py   = vy * 2.2;
+  float warp = fbm(vec2(px + t*0.18, py + t*0.12)) - 0.5;
+  float wx   = px + warp * 1.8 + t * 0.28;
+  float wy   = py - warp * 1.4 + t * 0.18;
+  float raw  = fbm(vec2(wx, wy));
 
-      {/* Hero 文字内容 */}
-      <motion.div
-        className="relative z-10 text-center mx-auto px-6 space-y-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease }}
-      >
-        <p className="text-[11px] tracking-[4px] uppercase text-muted-foreground">
-          Automotive Radar · Precision Components
-        </p>
+  /* Contrast shaping:
+     smoothstep low=0.18 → ~70% of cells receive a character
+     pow exponent 1.8 → peak area stays visible, not over-concentrated */
+  float s      = smoothstep(0.18, 0.72, raw);
+  float shaped = pow(s, 1.8);
 
-        <h1
-          className="font-light tracking-[-1px] text-foreground leading-tight"
-          style={{ fontSize: 'clamp(48px, 6vw, 80px)' }}
-        >
-          精密雷达感知
-          <br />
-          驱动智驾未来
-        </h1>
+  vec3 bg = vec3(0.992);
+  if (shaped <= 0.01) {
+    gl_FragColor = vec4(bg, 1.0);
+    return;
+  }
 
-        <p className="text-[14px] text-muted-foreground font-light leading-relaxed whitespace-nowrap">
-          专注汽车雷达核心部件研发与制造，以毫米级精度重新定义主动安全边界。
-        </p>
+  float charIdx  = min(floor(shaped * CHAR_N), CHAR_N - 1.0);
+  float dotAlpha = shaped * 0.32;
 
-        <div className="flex items-center justify-center gap-8 pt-2">
-          <a
-            href="#products"
-            className="text-[12px] tracking-[2px] uppercase border-b border-foreground pb-0.5 text-foreground hover:text-muted-foreground transition-colors duration-300"
-          >
-            浏览产品系列
-          </a>
-          <a
-            href="mailto:sales@autoradar.cn"
-            className="text-[12px] tracking-[2px] uppercase text-muted-foreground border-b border-muted-foreground pb-0.5 hover:text-foreground hover:border-foreground transition-colors duration-300"
-          >
-            联系销售团队
-          </a>
-        </div>
-      </motion.div>
-    </section>
-  )
+  /* Atlas is tiled horizontally: char i occupies u ∈ [i/N, (i+1)/N]
+     UNPACK_FLIP_Y = true means v=cellFrac.y is correct without manual flip */
+  float atlasU = (charIdx + cellFrac.x) / CHAR_N;
+  float atlasV = cellFrac.y;
+  float ink    = 1.0 - texture2D(u_atlas, vec2(atlasU, atlasV)).r;
+
+  gl_FragColor = vec4(mix(bg, vec3(0.0), ink * dotAlpha), 1.0);
 }
+```
+
+**JSX:** `<canvas ref={canvasRef} className="pointer-events-none absolute inset-0 w-full h-full" aria-hidden="true" />`
+
+---
+
+### 6.4 CategoryShowcase
+
+Section: `id="products" bg-background py-24`
+
+Header block (`max-w-7xl mx-auto px-6 mb-12`):
+- Eyebrow: `text-[11px] tracking-[3px] uppercase text-muted-foreground` — "Products"
+- H2: `text-2xl font-light tracking-tight` — "产品系列"
+
+Grid (`max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-0.5`), wrapped in `motion.div whileInView opacity:0,y:16→1,0 duration:0.6s`.
+
+Show **7 products** (one representative per category):
+
+| Category | ID |
+|----------|----|
+| 传感器 | RF-7702P |
+| 核心处理部件 | AR-PJ003 |
+| 发射接收部件 | AR-PJ007 |
+| 激光雷达 | AR-LR-001 |
+| 毫米波雷达 | AR-MW-001 |
+| 组合导航系统 | INS-001 |
+| 机器人控制器 | RC-100L |
+
+**Each item** — `motion.button` with `initial="rest" animate="rest" whileHover="hover"` `text-left w-full`:
+- First item (`i === 0`): `col-span-2`
+
+Image container:
+- First: `aspect-[3/2]` + `backgroundColor: '#F7F7F7'` (inline, not Tailwind)
+- Others: `aspect-[3/4] bg-muted`
+- Add `overflow-hidden relative`
+- Child: `motion.img object-contain w-full h-full`, variants `{ rest: { scale: 1 }, hover: { scale: 1.04 } }`, transition `duration:0.28 ease:[0.45,0,0.55,1]`
+
+Text strip: `px-1 pt-3 pb-4`
+- Category: `text-[10px] tracking-[3px] uppercase text-muted-foreground`
+- Name: `text-[14px] font-light tracking-wide text-foreground relative inline-block`
+  - Underline `motion.span`: `absolute bottom-0 left-0 h-px w-full bg-foreground`, `style={{ originX: 0 }}`, variants `{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }`, transition `duration:0.28 ease:[0.25,0.1,0.25,1]`
+
+---
+
+### 6.5 QuoteSection
+
+Section: `bg-background py-20`
+
+Single `motion.p` centered (`max-w-7xl mx-auto px-6 text-center`), `whileInView opacity:0,y:12→1,0 duration:0.8s`:
+- Text: "感知每一毫米的精度"
+- Style: `font-light tracking-[-1px] text-foreground/80`, `fontSize: clamp(32px, 5vw, 64px)`
+
+---
+
+### 6.6 ProductFeature
+
+Section: `bg-card py-24`
+
+Show **5 products** in order: `['RF-7701L', 'AR-PJ005', 'IR-LR-001', 'IR-MW-006', 'INS-005']`
+
+Each row — `motion.div whileInView opacity:0,y:16→1,0 duration:0.6s`:
+```
+grid lg:grid-cols-[6fr_4fr]
+border-b border-border/20
+relative overflow-hidden
+```
+Odd rows (index 1, 3) reverse columns: `lg:[&>*:first-child]:order-2 lg:[&>*:last-child]:order-1`
+
+**Decorative background number** (`position:absolute z-0`):
+- `font-bold text-foreground opacity-[0.035] leading-none`, `fontSize: 180px`
+- `bottom: -20px`, right-aligned for even rows, left-aligned for odd rows
+- Text: `product.id.replace('AR-', '')` — produces e.g. "PJ005"
+
+**Image side** (`relative z-10 overflow-hidden bg-background min-h-[400px]`):
+- `<button>` fills with `absolute inset-0 w-full h-full block`, clicking → `onProductClick(product)`
+- `<img>` with `object-cover w-full h-full`
+
+**Text side** (`relative z-10 px-12 lg:px-20 py-[200px] flex flex-col justify-center space-y-6 bg-card`):
+1. Eyebrow: `text-[10px] tracking-[3px] uppercase text-muted-foreground` — "{code} · {category}"
+2. Name: `font-light tracking-tight uppercase leading-tight text-pretty`, `fontSize: clamp(24px, 2.4vw, 38px)`
+3. Params table: `border-t border-border`, first **4** params from `parseKeyParams(product.keyParams).slice(0, 4)`
+   - Row: `flex justify-between items-start border-b border-border py-4 gap-4`
+   - Label: `text-[11px] leading-[1.5] tracking-[2px] uppercase text-muted-foreground shrink-0`
+   - Value: `text-[13px] leading-[1.5] font-light text-foreground text-right`
+4. CTAs: `pt-2 flex items-center gap-8`
+   - "查看详情": `text-[14px] tracking-[2px] uppercase border-b border-foreground pb-px text-foreground hover:text-muted-foreground hover:border-muted-foreground transition-colors duration-300`
+   - "询价咨询": `<a href="mailto:sales@autoradar.cn?subject=询价：{name}（{code}）">`, same size, starts muted, hover → foreground
+
+---
+
+### 6.7 ContactSection
+
+Section: `id="contact" bg-background py-24 border-t border-border/20`
+
+Content: `max-w-2xl mx-auto px-6 text-center space-y-8`, `motion.div whileInView opacity:0,y:16→1,0 duration:0.6s`:
+- Eyebrow: `text-[11px] tracking-[3px] uppercase text-muted-foreground` — "Contact"
+- H2: `text-2xl font-light tracking-tight` — "需要报价或技术咨询？"
+- Body: `text-[14px] text-muted-foreground font-light leading-relaxed` — "我们的销售工程师团队将在一个工作日内回复，提供专属的技术方案与报价。"
+- Links: `flex justify-center gap-8 pt-2`
+  - Primary `href="mailto:sales@autoradar.cn"`: `text-[12px] tracking-[2px] uppercase border-b border-foreground pb-px text-foreground` hover → muted — "发送邮件咨询"
+  - Secondary `href="tel:+86-400-000-0000"`: same size, `text-muted-foreground border-muted-foreground`, hover → foreground — "电话：400-000-0000"
+  - Both: `transition-colors duration-300`
+
+---
+
+### 6.8 SiteFooter
+
+```
+<footer border-t border-border/20 py-12>
+  <div max-w-7xl mx-auto px-6 flex justify-between items-end>
+    <div space-y-1>
+      "AutoRadar"                          text-[12px] tracking-[3px] uppercase font-light text-foreground
+      "汽车雷达核心部件 · 精密感知技术"    text-[11px] text-muted-foreground
+    </div>
+    <div text-right space-y-1>
+      "© 2026 AutoRadar. All rights reserved."    text-[11px] text-muted-foreground
+      "数据来源：飞书多维表格 · 产品管理"         text-[11px] text-muted-foreground/60
+    </div>
+  </div>
+</footer>
 ```
 
 ---
 
-### 6.3 ProductGrid.tsx（按产品线分类展示）
-
-**关键设计决策**：
-- 产品按 4 条产品线分区，每区有标题和产品数量
-- 每区内，位置 4 和 9（从 0 计）的卡片放大展示（`col-span-2`，`aspect-[3/2]`），其余为 `aspect-[3/4]`
-- `gap-0.5`（2px）使放大卡与普通卡的高度误差控制在 <1px（`gap-2` 会产生 ~5px 的错位）
-- hover 下划线用 `absolute span` + `scale-x-0 → scale-x-100`，**不要**在产品名 `<p>` 上加 `group` 类（会遮蔽外层 `div.group`）
-- 图片 hover 放大用纯 CSS transition，使用 sinusoidal easing：`cubic-bezier(0.45, 0, 0.55, 1)`，时长 1000ms，感觉"呼吸"般柔和
+### 6.9 ProductModal
 
 ```tsx
+import { Dialog } from '@base-ui-components/react/dialog'
 import { motion } from 'motion/react'
-import { products, type ProductCategory } from '@/data/products'
 
-const ease = [0.165, 0.84, 0.44, 1] as const
-
-// 4 条展示产品线（将 7 个细分类合并）
-const SECTIONS: { label: string; en: string; cats: ProductCategory[] }[] = [
-  { label: '雷达核心部件', en: 'Core Radar Components', cats: ['传感器', '核心处理部件', '发射接收部件', '辅助设备'] },
-  { label: '激光雷达',     en: 'LiDAR',                 cats: ['激光雷达'] },
-  { label: '毫米波雷达',   en: 'Millimeter-Wave Radar', cats: ['毫米波雷达'] },
-  { label: '组合导航系统', en: 'Integrated Navigation',  cats: ['组合导航系统'] },
-]
-
-// 每 10 个产品中，位置 4 和 9 放大展示（col-span-2）
-function isFeatured(i: number) {
-  const pos = i % 10
-  return pos === 4 || pos === 9
-}
-
-export function ProductGrid() {
-  return (
-    <section id="products" className="bg-background py-24">
-      <div className="max-w-7xl mx-auto px-6">
-
-        {/* Section Header */}
+<Dialog.Root open={product !== null} onOpenChange={(open) => { if (!open) onClose() }}>
+  <Dialog.Portal>
+    <Dialog.Backdrop className="fixed inset-0 bg-black/50 z-[60]" />
+    <Dialog.Popup className="fixed inset-0 z-[61] flex items-center justify-center p-4 md:p-10 overflow-y-auto">
+      {product && (
         <motion.div
-          className="space-y-2"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.6, ease }}
-        >
-          <p className="text-[11px] tracking-[3px] uppercase text-muted-foreground">
-            Full Product Line
-          </p>
-          <h2 className="text-3xl font-light tracking-tight text-foreground">
-            完整产品系列
-          </h2>
-          <p className="text-[13px] text-muted-foreground">
-            39 款型号 · 4 条产品线
-          </p>
-        </motion.div>
-
-        {/* 按产品线分区 */}
-        {SECTIONS.map((section, si) => {
-          const sectionProducts = products.filter(p => section.cats.includes(p.category))
-
-          return (
-            <motion.div
-              key={section.label}
-              className="mt-20"
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.6, delay: si * 0.05, ease }}
-            >
-              {/* 产品线标题 */}
-              <div className="flex items-end justify-between border-t border-border/40 pt-5 mb-6">
-                <div className="space-y-1">
-                  <p className="text-[10px] tracking-[3px] uppercase text-muted-foreground">
-                    {section.en}
-                  </p>
-                  <h3 className="text-xl font-light tracking-tight text-foreground">
-                    {section.label}
-                  </h3>
-                </div>
-                <p className="text-[12px] text-muted-foreground/60 tabular-nums pb-0.5">
-                  {sectionProducts.length} 款
-                </p>
-              </div>
-
-              {/* 产品网格 */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-0.5">
-                {sectionProducts.map((product, i) => {
-                  const featured = isFeatured(i)
-
-                  return (
-                    <motion.div
-                      key={product.id}
-                      className={featured ? 'col-span-2' : ''}
-                      initial={{ opacity: 0, y: 12 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: '-40px' }}
-                      transition={{ duration: 0.5, delay: (i % 10) * 0.04, ease }}
-                    >
-                      <div className="group">
-                        {/* 图片区 */}
-                        <div className={`relative overflow-hidden bg-card ${featured ? 'aspect-[3/2]' : 'aspect-[3/4]'}`}>
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className="w-full h-full object-cover opacity-90 scale-100 group-hover:opacity-100 group-hover:scale-[1.03]"
-                            style={{ transition: 'opacity 600ms ease, transform 1000ms cubic-bezier(0.45, 0, 0.55, 1)' }}
-                          />
-                        </div>
-
-                        {/* 信息区 */}
-                        <div className="pt-3 pb-4 space-y-1">
-                          <p className="text-[10px] tracking-[3px] uppercase text-muted-foreground">
-                            {product.category}
-                          </p>
-                          <p className="relative inline-block text-[13px] tracking-[2px] uppercase font-normal text-foreground">
-                            <span className="relative">
-                              {product.name}
-                              {/* hover 下划线：注意 span 不加 group，由外层 div.group 控制 */}
-                              <span className="absolute bottom-0 left-0 w-full h-px bg-foreground scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300" />
-                            </span>
-                          </p>
-                          <p className="text-[13px] font-light text-foreground/70">
-                            ¥{product.price.toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )
-                })}
-              </div>
-            </motion.div>
-          )
-        })}
-
-      </div>
-    </section>
-  )
-}
-```
-
----
-
-### 6.4 QuoteSection.tsx（视觉节奏停顿）
-
-```tsx
-import { motion } from 'motion/react'
-
-const ease = [0.165, 0.84, 0.44, 1] as const
-
-export function QuoteSection() {
-  return (
-    <section className="bg-background py-20 border-t border-border/20">
-      <div className="max-w-7xl mx-auto px-6 text-center">
-        <motion.p
-          className="font-light tracking-[-1px] text-foreground/80"
-          style={{ fontSize: 'clamp(32px, 5vw, 64px)' }}
+          className="bg-background w-full max-w-5xl max-h-[92vh] overflow-y-auto"
           initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.8, ease }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: [0.165, 0.84, 0.44, 1] }}
         >
-          感知每一毫秒的精度
-        </motion.p>
-      </div>
-    </section>
-  )
-}
+```
+
+**Sticky header** (`sticky top-0 z-10 bg-background px-10 md:px-14 pt-10 pb-7 flex items-start justify-between border-b border-border/20`):
+- Left (`space-y-1.5`):
+  - `text-[10px] tracking-[3px] uppercase text-muted-foreground` — "{code} · {category}"
+  - `text-2xl font-light tracking-tight text-foreground leading-snug` — product name
+- Right: `<Dialog.Close>` — `text-[11px] tracking-[2px] uppercase text-muted-foreground hover:text-foreground transition-colors duration-200 mt-1 shrink-0 ml-8` — "关闭"
+
+**Body** (`grid md:grid-cols-2`):
+
+Left panel — `bg-card p-10 flex items-center justify-center min-h-[380px]`:
+- `<img>` with `w-full max-h-[440px] object-contain`
+
+Right panel — `px-10 md:px-14 py-14 flex flex-col gap-10`:
+
+1. Tagline: `text-[13px] text-muted-foreground font-light leading-relaxed`
+   — `product.tagline.split('。')[0] + '。'`
+
+2. Params grid: `grid grid-cols-2 gap-x-6 gap-y-0 border-t border-border`
+   — all params from `parseKeyParams(product.keyParams)` (no slice limit)
+   - Cell: `py-3 border-b border-border/40`
+   - Label: `text-[10px] tracking-[2px] uppercase text-muted-foreground leading-none mb-2.5`
+   - Value: `text-[14px] font-light text-foreground leading-snug`
+
+3. Price: `<div>`
+   - Label: `text-[10px] tracking-[2px] uppercase text-muted-foreground` — "参考价格"
+   - Value: `text-[18px] font-light text-foreground mt-1` — `¥{product.price.toLocaleString()}`
+
+4. CTA row: `flex gap-8 border-t border-border/30 pt-6`
+   - "下载资料": `<a href="/datasheet.zip" download>` — `text-[11px] tracking-[2px] uppercase text-muted-foreground border-b border-muted-foreground pb-px hover:text-foreground hover:border-foreground transition-colors duration-200`
+   - "询价咨询": `<a href="mailto:sales@autoradar.cn?subject=询价：{name}（{code}）">` — `text-[11px] tracking-[2px] uppercase text-foreground border-b border-foreground pb-px hover:text-muted-foreground hover:border-muted-foreground transition-colors duration-200`
+
+---
+
+## 7. Critical Implementation Notes
+
+### 7.1 GLSL Reserved Keywords
+`half`, `input`, `output`, `texture` are reserved in GLSL ES 1.0. Using them as variable names causes **silent shader compilation failure** — blank canvas, no runtime error unless you call `gl.getShaderInfoLog()`. Always log shader errors:
+```ts
+if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+  console.error('shader error:', gl.getShaderInfoLog(s))
+```
+
+### 7.2 WebGL Texture Y-Axis Flip
+Canvas 2D origin is top-left (y increases downward). WebGL texture UV origin is bottom-left (v increases upward). Call `gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)` before `texImage2D`. After that, `atlasV = cellFrac.y` in the shader is correct without any manual flip.
+
+### 7.3 Tailwind v4 — No tailwind.config.js
+All theme values live inside `@theme inline { }` in CSS. The `shadcn/ui` init writes a `shadcn/tailwind.css` file that provides component base styles. Do not create `tailwind.config.js` or `tailwind.config.ts`.
+
+### 7.4 motion/react Variant Propagation
+`whileHover="hover"` on a parent `motion.X` automatically propagates the `"hover"` variant name to all descendant `motion.X` elements that declare a `variants` prop with a `"hover"` key. No event handlers or state needed in children.
+
+### 7.5 shadcn Dialog Import Path
+```ts
+import { Dialog } from '@base-ui-components/react/dialog'
+// NOT from '@radix-ui' or 'shadcn/ui' directly
 ```
 
 ---
 
-### 6.5 ProductFeature.tsx（精选旗舰展示）
+## 8. File Structure
 
-**关键设计决策**：
-- 从三条主力产品线各选一款旗舰：激光雷达 · 毫米波雷达 · 组合导航系统
-- 图文交替排列（奇数项反转），图片比例 3:2（宽屏感）
-- 超大背景编号取自 `product.id.replace('AR-', '')`，绝对定位，opacity-[0.035]
-- 图文比例 `lg:grid-cols-[3fr_2fr]`，图片侧占 60%
-- 规格用 border-b 分割线列表（而非卡片）
-- 图片 hover：同 ProductGrid，sinusoidal easing，1000ms
-
-```tsx
-import { motion } from 'motion/react'
-import { products } from '@/data/products'
-
-const ease = [0.165, 0.84, 0.44, 1] as const
-
-// 从三条主力产品线各选一款旗舰：激光雷达 · 毫米波雷达 · 组合导航系统
-const FEATURED_IDS = ['AR-LR-001', 'AR-MW-001', 'INS-002']
-
-export function ProductFeature() {
-  const featured = FEATURED_IDS.map(id => products.find(p => p.id === id)!)
-
-  return (
-    <section className="bg-card py-32 border-t border-border/30">
-      <div className="max-w-7xl mx-auto px-6 space-y-0">
-        {featured.map((product, i) => {
-          const isReversed = i % 2 === 1
-          const bgNum = product.id.replace('AR-', '')
-
-          return (
-            <motion.div
-              key={product.id}
-              className={`relative overflow-hidden grid lg:grid-cols-[3fr_2fr] min-h-[600px] border-b border-border/20 ${isReversed ? 'lg:[&>*:first-child]:order-2 lg:[&>*:last-child]:order-1' : ''}`}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.6, ease }}
-            >
-              {/* 超大背景编号 — 破格③ */}
-              <span
-                className="absolute select-none pointer-events-none font-bold text-foreground opacity-[0.035] z-0 leading-none"
-                style={{
-                  fontSize: '180px',
-                  bottom: '-20px',
-                  right: isReversed ? 'auto' : '-20px',
-                  left: isReversed ? '-20px' : 'auto',
-                }}
-              >
-                {bgNum}
-              </span>
-
-              {/* 图片侧 */}
-              <div className="relative z-10 overflow-hidden bg-background">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover opacity-90 scale-100 hover:opacity-100 hover:scale-[1.03]"
-                  style={{ transition: 'opacity 600ms ease, transform 1000ms cubic-bezier(0.45, 0, 0.55, 1)' }}
-                />
-              </div>
-
-              {/* 文字侧 */}
-              <div className="relative z-10 px-12 lg:px-20 py-16 flex flex-col justify-center space-y-8 bg-card">
-                {/* Eyebrow */}
-                <p className="text-[10px] tracking-[3px] uppercase text-muted-foreground">
-                  {product.code} · {product.category}
-                </p>
-
-                {/* 产品名 */}
-                <h3
-                  className="font-light tracking-tight uppercase text-foreground leading-tight"
-                  style={{ fontSize: 'clamp(28px, 3vw, 44px)' }}
-                >
-                  {product.name}
-                </h3>
-
-                {/* Tagline */}
-                <p className="text-[15px] text-muted-foreground font-light leading-relaxed">
-                  {product.tagline}
-                </p>
-
-                {/* 规格列表 */}
-                <div className="border-t border-border">
-                  {product.specs.map((spec) => (
-                    <div
-                      key={spec.label}
-                      className="flex justify-between border-b border-border/50 py-3"
-                    >
-                      <span className="text-[11px] tracking-[2px] uppercase text-muted-foreground">
-                        {spec.label}
-                      </span>
-                      <span className="text-[13px] font-light text-foreground">
-                        {spec.value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* 价格 + CTA */}
-                <div className="border-t border-border pt-6 flex items-end justify-between">
-                  <div>
-                    <p className="text-[11px] tracking-[2px] uppercase text-muted-foreground">
-                      参考价格
-                    </p>
-                    <p className="text-xl font-light text-foreground mt-1">
-                      ¥{product.price.toLocaleString()}
-                    </p>
-                  </div>
-                  <a
-                    href={`mailto:sales@autoradar.cn?subject=询价：${product.name}（${product.code}）`}
-                    className="group relative text-[12px] tracking-[2px] uppercase border-b border-foreground pb-px text-foreground hover:text-muted-foreground hover:border-muted-foreground transition-colors duration-300"
-                  >
-                    询价咨询
-                  </a>
-                </div>
-              </div>
-            </motion.div>
-          )
-        })}
-      </div>
-    </section>
-  )
-}
 ```
-
----
-
-### 6.6 ContactSection.tsx
-
-```tsx
-import { motion } from 'motion/react'
-
-const ease = [0.165, 0.84, 0.44, 1] as const
-
-export function ContactSection() {
-  return (
-    <section id="contact" className="bg-background py-24 border-t border-border/20">
-      <motion.div
-        className="max-w-2xl mx-auto px-6 text-center space-y-8"
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.6, ease }}
-      >
-        <p className="text-[11px] tracking-[3px] uppercase text-muted-foreground">
-          Contact
-        </p>
-        <h2 className="text-2xl font-light tracking-tight text-foreground">
-          需要报价或技术咨询？
-        </h2>
-        <p className="text-[14px] text-muted-foreground font-light leading-relaxed">
-          我们的销售工程师团队将在一个工作日内回复，提供专属的技术方案与报价。
-        </p>
-        <div className="flex justify-center gap-8 pt-2">
-          <a
-            href="mailto:sales@autoradar.cn"
-            className="text-[12px] tracking-[2px] uppercase border-b border-foreground pb-px text-foreground hover:text-muted-foreground hover:border-muted-foreground transition-colors duration-300"
-          >
-            发送邮件咨询
-          </a>
-          <a
-            href="tel:+86-400-000-0000"
-            className="text-[12px] tracking-[2px] uppercase text-muted-foreground border-b border-muted-foreground pb-px hover:text-foreground hover:border-foreground transition-colors duration-300"
-          >
-            电话：400-000-0000
-          </a>
-        </div>
-      </motion.div>
-    </section>
-  )
-}
+src/
+  App.tsx
+  index.css
+  main.tsx
+  components/
+    SiteNav.tsx
+    SiteHero.tsx
+    ASCIIBeamsCanvas.tsx
+    CategoryShowcase.tsx
+    QuoteSection.tsx
+    ProductFeature.tsx
+    ContactSection.tsx
+    SiteFooter.tsx
+    ProductModal.tsx
+  data/
+    products.ts
+public/
+  products/
+    RF-7701L.png  RF-7702P.png  RF-7905M.png
+    AR-PJ003.png  AR-PJ004.png  AR-PJ005.png
+    AR-PJ006.png  AR-PJ007.png  AR-PJ008.png  AR-PJ009.png
+    AR-LR-001.png AR-LR-002.png AR-LR-005.png IR-LR-001.png
+    AR-MW-001.png IR-MW-006.png
+    INS-001.png   INS-005.png
+    RC-100L.png   RC-300X.png
+  datasheet.zip
 ```
-
----
-
-### 6.7 SiteFooter.tsx
-
-```tsx
-export function SiteFooter() {
-  return (
-    <footer className="border-t border-border/20 py-12">
-      <div className="max-w-7xl mx-auto px-6 flex justify-between items-end">
-        <div className="space-y-1">
-          <p className="text-[12px] tracking-[3px] uppercase font-light text-foreground">
-            AutoRadar
-          </p>
-          <p className="text-[11px] text-muted-foreground">
-            汽车雷达核心部件 · 精密感知技术
-          </p>
-        </div>
-        <div className="text-right space-y-1">
-          <p className="text-[11px] text-muted-foreground tracking-wide">
-            © 2026 AutoRadar. All rights reserved.
-          </p>
-          <p className="text-[11px] text-muted-foreground/60">
-            数据来源：飞书多维表格 · 产品管理
-          </p>
-        </div>
-      </div>
-    </footer>
-  )
-}
-```
-
----
-
-## 七、动效设计原则（Emil Kowalski）
-
-从已应用的动效规范中提炼：
-
-1. **永远不从 0 开始 scale**：`scale-x-0` 的下划线用 `origin-left`，从宽度折叠，而非从点展开
-2. **入场 ease-out**：`[0.165, 0.84, 0.44, 1]` — 快速加速后缓慢收尾，感觉自信
-3. **Hero ease 更弹性**：`[0.16, 1, 0.3, 1]` — 夸张的 overshoot 感，适合首屏
-4. **图片放大用 sinusoidal**：`cubic-bezier(0.45, 0, 0.55, 1)` + 1000ms，感觉像"呼吸"而非机械伸缩
-5. **stagger 用 delay 而非 staggerChildren**：`delay: i * 0.04`，控制更精确
-6. **whileInView margin**：`-60px` 让动效在元素即将进入视口时提前触发，更流畅
-7. **opacity 初始值不为 0**：波纹用 `initial={{ opacity: w.op * 0.4 }}`，避免"出现"感
-8. **repeatType: 'mirror'**：呼吸动效用 mirror 而非 reverse，确保无缝循环且无跳跃
-
----
-
-## 八、常见错误与规避
-
-| 错误 | 正确做法 |
-|------|---------|
-| `ease: 'easeOut'`（字符串） | `ease: [0.165, 0.84, 0.44, 1]`（数组） |
-| `gap-2` 导致放大卡与普通卡高度不对齐 | `gap-0.5`（2px），将误差控制在 <1px |
-| 在内层 `<p>` 加 `group` 类 | 只在外层容器 `<div>` 加 `group`，内层直接用 `group-hover:` |
-| 波纹循环抖动 | `scrollDist = Math.ceil(W/wl)*wl`，确保滚动距离为波长整数倍 |
-| 所有波纹同时呼吸 | 使用非整数倍的 breathe 周期（8.3, 11.9, 7.4…）+ `delay: i * 1.1` |
-| 产品图灰色（图片不存在） | 确认 `public/products/` 目录有全部图片，命名与 `product.image` 字段完全匹配 |
-| `import { motion } from 'framer-motion'` | `import { motion } from 'motion/react'`（此项目用 motion v11+） |
-| `activeProducts` 过滤后找不到 FEATURED_IDS | 直接从 `products`（全量）中 find，不用 activeProducts |
-
----
-
-## 九、实施 Checklist
-
-- [ ] 读取 `CLAUDE.md`（技术栈、路径别名、动效规范）
-- [ ] 读取 `src/data/products.ts`（了解数据结构和产品 ID）
-- [ ] 更新 `src/index.css` 的 `:root` token（radius 改为 0.125rem）
-- [ ] 确认 `index.html` 无 `class="dark"`
-- [ ] 创建 7 个组件文件（含 QuoteSection）
-- [ ] 所有 motion ease 使用数组格式
-- [ ] SiteHero：波纹 SVG + 径向渐变遮罩 + 文字内容
-- [ ] ProductGrid：按 4 条产品线分区，`gap-0.5`，featured 位置 4/9
-- [ ] QuoteSection：单行大字，极度留白
-- [ ] ProductFeature：FEATURED_IDS 指向真实存在的产品 ID，超大背景编号
-- [ ] ContactSection：两个文字+下划线 CTA
-- [ ] SiteFooter：极简两栏
-- [ ] 无有色 accent，无 box-shadow，无填充式按钮，无圆角卡片
-- [ ] `npm run build` 无 TS 报错

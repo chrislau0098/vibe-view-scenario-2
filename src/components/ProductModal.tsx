@@ -61,10 +61,10 @@ export function ProductModal({ product, onClose }: ProductModalProps) {
                     <div className="grid grid-cols-2 gap-x-6 gap-y-0 border-t border-border">
                       {parseKeyParams(product.keyParams).map((param) => (
                         <div key={param.label} className="py-3 border-b border-border/40">
-                          <p className="text-[10px] tracking-[2px] uppercase text-muted-foreground leading-none mb-1">
+                          <p className="text-[10px] tracking-[2px] uppercase text-muted-foreground leading-none mb-2.5">
                             {param.label}
                           </p>
-                          <p className="text-[12px] font-light text-foreground leading-snug">
+                          <p className="text-[14px] font-light text-foreground leading-snug">
                             {param.value}
                           </p>
                         </div>
@@ -75,7 +75,7 @@ export function ProductModal({ product, onClose }: ProductModalProps) {
                   {/* 参考价格 */}
                   <div>
                     <p className="text-[10px] tracking-[2px] uppercase text-muted-foreground">参考价格</p>
-                    <p className="text-base font-light text-foreground mt-1">
+                    <p className="text-[18px] font-light text-foreground mt-1">
                       ¥{product.price.toLocaleString()}
                     </p>
                   </div>
