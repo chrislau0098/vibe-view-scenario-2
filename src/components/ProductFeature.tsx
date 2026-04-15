@@ -19,7 +19,7 @@ export function ProductFeature({ onProductClick }: { onProductClick: (p: Product
           return (
             <motion.div
               key={product.id}
-              className={`relative overflow-hidden grid lg:grid-cols-[6fr_4fr] border-b border-border/20 ${isReversed ? 'lg:[&>*:first-child]:order-2 lg:[&>*:last-child]:order-1' : ''}`}
+              className={`relative overflow-hidden grid lg:grid-cols-[8fr_6fr] border-b border-border/20 ${isReversed ? 'lg:[&>*:first-child]:order-2 lg:[&>*:last-child]:order-1' : ''}`}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
