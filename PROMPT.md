@@ -192,7 +192,7 @@ function mapRecord(fields: Record<string, unknown>): Product | null {
     price:        getNumber(fields['销售价格'] ?? fields['价格']),
     tagline:      getTextValue(fields['产品信息'] ?? fields['tagline']),
     industry:     getTextValue(fields['应用行业']),
-    image:        getAttachmentUrl(fields['产品图片']),
+    image:        `https://vibe-view-demo-site.vercel.app/products/${id}.png`,
     keyParams:    getTextValue(fields['关键参数']),
     detailSpecs:  getTextValue(fields['详细规格']),
     dataSheetUrl: getAttachmentUrl(fields['资料下载']) || undefined,
