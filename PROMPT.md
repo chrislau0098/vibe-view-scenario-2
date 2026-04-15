@@ -98,6 +98,8 @@ Path alias: `@/` → `./src/` — configure in both `vite.config.ts` and `tsconf
 
 ## 4. Data Model — `src/data/products.ts`
 
+> **Data source:** All product records, images, and downloadable files come from a Feishu (Lark) Base at runtime. The product table below is reference-only for field names and approximate values. The authoritative values are whatever the Feishu Base returns. Do not hard-code product data into the frontend — fetch it from the API layer.
+
 ```ts
 export type ProductCategory =
   '传感器' | '核心处理部件' | '发射接收部件' | '辅助设备' |
@@ -114,10 +116,10 @@ export interface Product {
   price: number
   tagline: string     // Full product description (first sentence used in modal)
   industry: string
-  image: string       // '/products/{id}.png'
+  image: string       // Resolved download URL from Feishu attachment — leave as '' during scaffolding
   keyParams: string   // '；'-delimited "label：value" pairs
   detailSpecs: string
-  dataSheetUrl?: string
+  dataSheetUrl?: string  // Resolved download URL from Feishu attachment — leave as '' if not yet fetched
 }
 
 // Parses keyParams string into [{label, value}] array
@@ -159,7 +161,48 @@ export const categoryGroups: Record<string, Product[]> = /* grouped by category 
 | RC-100L | 入门级移动机器人控制器 Lite | 机器人控制器 | 21442.86 |
 | RC-300X | 高性能机器人控制器 Plus | 机器人控制器 | 52722.87 |
 
-Images: `public/products/{id}.png` for all 20 products. Place `public/datasheet.zip` as a static download file.
+The table above is for reference only. Field values (name, price, keyParams, etc.) must come from the Feishu Base at runtime. Images and datasheet files are Feishu attachment fields — their download URLs must be resolved via the API (see Section 4.5). **Do not place any product images or datasheet files in `public/`.**
+
+---
+
+## 4.5 Feishu Base — Data Source
+
+**Base:** `YOegbLb4SaifeCsAjRjchRx1n5c` · **Table:** `tblyf2dtGWcr30JJ`
+
+### Field mapping (Feishu field name → Product interface key)
+
+| Feishu Field | Type | Product key |
+|---|---|---|
+| ID / 产品编号 | Text | `id`, `code` |
+| 产品名称 | Text | `name` |
+| 产品线 / 分类 | Single-select | `category` |
+| 状态 | Multi-select | `status` |
+| 销售价格 | Number | `price` |
+| 产品信息 | Long text | `tagline` |
+| 应用行业 | Text | `industry` |
+| 产品图片 | Attachment | `image` (resolved URL) |
+| 关键参数 | Long text | `keyParams` |
+| 详细规格 | Long text | `detailSpecs` |
+| 资料下载 | Attachment | `dataSheetUrl` (resolved URL) |
+
+### Image and file URL resolution
+
+Product images and datasheet files are stored as Feishu attachment fields. Their download URLs are **not** returned directly by the record list API — you must resolve them separately:
+
+```
+GET /open-apis/drive/v1/medias/{file_token}/download
+```
+
+- `file_token` is found inside the attachment field value of each record
+- The response is a binary stream; obtain a pre-signed URL or serve via proxy
+- **Do not use `drive +download` shortcut** — it returns 403 for bitable attachments; use the raw API endpoint above
+- During scaffolding / code generation, set `image: ''` and `dataSheetUrl: ''` as empty-string placeholders; the data-fetching layer will populate them at runtime
+
+### Product data at runtime
+
+- Fetch all records from the table using the Feishu Base API (`+record-list` or equivalent)
+- Map each record to the `Product` interface using the field mapping above
+- The number of products, their names, prices, and parameter values are determined entirely by what the Base contains — do not assume exactly 20 products or any specific field values
 
 ---
 
@@ -598,13 +641,5 @@ src/
   data/
     products.ts
 public/
-  products/
-    RF-7701L.png  RF-7702P.png  RF-7905M.png
-    AR-PJ003.png  AR-PJ004.png  AR-PJ005.png
-    AR-PJ006.png  AR-PJ007.png  AR-PJ008.png  AR-PJ009.png
-    AR-LR-001.png AR-LR-002.png AR-LR-005.png IR-LR-001.png
-    AR-MW-001.png IR-MW-006.png
-    INS-001.png   INS-005.png
-    RC-100L.png   RC-300X.png
-  datasheet.zip
+  (no product images or datasheet files — all resolved at runtime from Feishu Base)
 ```
