@@ -5,7 +5,7 @@ You are a senior frontend engineer. Your task is to build a complete single-page
 ## Requirements
 
 1. Write all code into a **single file: `src/App.tsx`**. Do not split into multiple component files.
-2. All product data, images, and downloadable files come from a **Feishu (Lark) Base** at runtime. Do not hard-code any product content. Leave `image` and `dataSheetUrl` as empty strings `""` during scaffolding; they will be populated from the Feishu API response.
+2. All product **metadata** (name, price, specs, etc.) and downloadable files come from a **Feishu (Lark) Base** at runtime. Do not hard-code product metadata. Product **images** are served from the Vercel deployment: `https://vibe-view-demo-site.vercel.app/products/{id}.png` — construct the URL directly from the product `id` field. Leave `dataSheetUrl` as `undefined` during scaffolding; it will be populated from the Feishu API response.
 3. Reproduce the **WebGL ASCII canvas** effect exactly — the GLSL shader code below must be copied verbatim. Do not rewrite it.
 4. Use **Tailwind CSS v4** (CSS-first, no `tailwind.config.js`) and **`motion/react`** for all animations. Never use string easing values; always use cubic-bezier arrays.
 5. For hover animations involving scale transforms, use **`motion/react` variant propagation** — Tailwind v4's `scale-[x]` utility generates a standalone CSS `scale:` property that CSS `transition` cannot capture.
@@ -135,7 +135,7 @@ interface Product {
   price: number
   tagline: string
   industry: string
-  image: string       // tmp_url from Feishu attachment field; '' while loading
+  image: string       // Vercel CDN: https://vibe-view-demo-site.vercel.app/products/${id}.png
   keyParams: string   // '；'-delimited "label：value" pairs
   detailSpecs: string
   dataSheetUrl?: string  // tmp_url from Feishu attachment field; omit if empty
@@ -153,8 +153,7 @@ const APP_TOKEN  = 'YOegbLb4SaifeCsAjRjchRx1n5c'
 const TABLE_ID   = 'tblyf2dtGWcr30JJ'
 
 // Feishu bitable attachment fields return [{tmp_url, file_token, name, size}]
-// tmp_url is a time-limited public URL — use it directly as <img src>
-// It does NOT require an Authorization header.
+// Used only for dataSheetUrl. Product images use Vercel CDN URLs, not tmp_url.
 
 function getAttachmentUrl(field: unknown): string {
   if (!Array.isArray(field) || field.length === 0) return ''
@@ -934,7 +933,7 @@ Create `.env` in project root:
 VITE_FEISHU_ACCESS_TOKEN=your_feishu_user_or_app_access_token
 ```
 
-The Feishu access token is used to authenticate requests to the Base API. The product images use `tmp_url` from the attachment field response — these are temporary public URLs that do **not** require the Authorization header and can be used directly in `<img src>`.
+The Feishu access token is used to authenticate requests to the Base API for product metadata (name, price, specs, etc.) and datasheet download URLs. **Product images are not fetched from Feishu** — they are served directly from `https://vibe-view-demo-site.vercel.app/products/{id}.png`.
 
 ---
 
@@ -946,4 +945,3 @@ The Feishu access token is used to authenticate requests to the Base API. The pr
 | Characters appear upside-down | Missing `UNPACK_FLIP_Y_WEBGL` before `texImage2D` | Already in the code above — do not remove it |
 | Hover scale animation does nothing | Tailwind v4 `scale-[x]` generates CSS `scale:` not `transform: scale()` | Use `motion/react` variant propagation as shown above |
 | No products loaded | `VITE_FEISHU_ACCESS_TOKEN` not set | Add to `.env` and restart dev server |
-| Feishu API 403 on images | Using drive `+download` shortcut on bitable attachments | Use `tmp_url` from the record's attachment field directly |
