@@ -100,11 +100,11 @@ void main() {
   float vy     =  cellIdx.y / nCells.y;
 
   /* ── Domain-warped FBM — identical params to ASCIIBeamsCanvas.tsx ─
-     t          = elapsed * 0.44
+     t          = elapsed * 0.88
      warp layer = fbm(p + t*{0.18,0.12}) − 0.5
      main field = fbm(warped + t*{0.28,0.18})
   ────────────────────────────────────────────────────────────────── */
-  float t    = u_time * 0.44;
+  float t    = u_time * 0.88;
   float px   = vx * 2.2;
   float py   = vy * 2.2;
   float warp = fbm(vec2(px + t*0.18, py + t*0.12)) - 0.5;
