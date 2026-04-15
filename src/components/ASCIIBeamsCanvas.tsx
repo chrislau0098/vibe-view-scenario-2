@@ -152,6 +152,7 @@ export function ASCIIBeamsCanvas() {
 
     /* ── Compile shaders ──────────────────────────────────────── */
     function compile(type: number, src: string) {
+      if (!gl) throw new Error('[ASCII] gl is null')
       const s = gl.createShader(type)!
       gl.shaderSource(s, src)
       gl.compileShader(s)
@@ -200,6 +201,7 @@ export function ASCIIBeamsCanvas() {
     const start = performance.now()
 
     function resize() {
+      if (!canvas || !gl) return
       const dpr = window.devicePixelRatio || 1
       canvas.width  = canvas.offsetWidth  * dpr
       canvas.height = canvas.offsetHeight * dpr
@@ -208,6 +210,7 @@ export function ASCIIBeamsCanvas() {
     }
 
     function draw() {
+      if (!canvas || !gl) return
       gl.uniform1f(uTime, (performance.now() - start) / 1000)
       gl.uniform2f(uRes, canvas.width, canvas.height)
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
