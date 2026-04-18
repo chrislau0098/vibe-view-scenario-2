@@ -6,7 +6,7 @@
 
 ---
 
-## 1. Visual Theme & Atmosphere
+## 1. Visual DNA
 
 A surgically restrained, gallery-airy interface that communicates luxury through absence. The atmosphere is that of a high-end showroom — expansive white walls, a single object under soft light, and typography so quiet it whispers authority. Every element earns its place; decoration is treated as noise.
 
@@ -23,41 +23,18 @@ A surgically restrained, gallery-airy interface that communicates luxury through
 - Typography is lightweight, uppercase, letter-spaced — conveys precision, not power
 - Interaction feels fluid but never theatrical
 
----
+**Mood:**
+```
+Precision · Restraint · Luxury · Silence
 
-## 2. Color Palette & Roles
-
-All colors in OKLCH color space for perceptual uniformity. **Zero accent color** — the darkest neutral is the only "emphasis."
-
-| Semantic Name | Value | Role |
-|---------------|-------|------|
-| **Canvas White** | `oklch(99% 0 0)` | Primary background surface, Hero background |
-| **Surface Ash** | `oklch(97.5% 0 0)` | Card fill, image container background, feature text-side background |
-| **Whisper Gray** | `oklch(95% 0 0)` | Secondary/muted surface, subtle section differentiation |
-| **Warm Ink** | `oklch(11% 0.005 60)` | Primary text, brand name, headings — near-black with warm micro-tint |
-| **Steel Muted** | `oklch(42% 0 0)` | Secondary text, metadata, eyebrow labels, timestamps |
-| **Border Veil** | `oklch(90% 0 0)` | Structural borders, input outlines — always used at 20–40% opacity |
-| **Destructive** | `oklch(57.7% 0.245 27.325)` | Error states only, never decorative |
-
-### Color Principles
-- **Zero accent color.** No blue, no purple, no gold. The only "emphasis" is Warm Ink itself
-- Backgrounds: always white or near-white. Never warm-tinted, never cool-tinted
-- Hierarchy is communicated through weight and opacity, not hue
-- Borders always at reduced opacity (`border-border/20` to `border-border/40`) — barely visible structural lines
-- Focus ring uses Warm Ink — same as foreground, not a separate highlight color
-
-### Dark Mode Tokens (optional, pre-configured)
-| Semantic Name | Value |
-|---------------|-------|
-| Canvas | `oklch(14.5% 0 0)` |
-| Surface | `oklch(20.5% 0 0)` |
-| Foreground | `oklch(98.5% 0 0)` |
-| Muted Foreground | `oklch(70.8% 0 0)` |
-| Border | `oklch(100% 0 0 / 10%)` |
+If this design could speak, it would say:
+"We don't need to speak."
+```
+B&O design is subtraction taken to its extreme — every element must justify its existence. Remove everything that can be removed. What remains is the design.
 
 ---
 
-## 3. Typography Rules
+## 2. Typography
 
 ### Font Stack
 - **Sans:** `'Geist Variable', sans-serif` — primary typeface for everything
@@ -91,7 +68,39 @@ All colors in OKLCH color space for perceptual uniformity. **Zero accent color**
 
 ---
 
-## 4. Spacing & Layout Principles
+## 3. Color System
+
+All colors in OKLCH color space for perceptual uniformity. **Zero accent color** — the darkest neutral is the only "emphasis."
+
+| Semantic Name | Value | Role |
+|---------------|-------|------|
+| **Canvas White** | `oklch(99% 0 0)` | Primary background surface, Hero background |
+| **Surface Ash** | `oklch(97.5% 0 0)` | Card fill, image container background, feature text-side background |
+| **Whisper Gray** | `oklch(95% 0 0)` | Secondary/muted surface, subtle section differentiation |
+| **Warm Ink** | `oklch(11% 0.005 60)` | Primary text, brand name, headings — near-black with warm micro-tint |
+| **Steel Muted** | `oklch(42% 0 0)` | Secondary text, metadata, eyebrow labels, timestamps |
+| **Border Veil** | `oklch(90% 0 0)` | Structural borders, input outlines — always used at 20–40% opacity |
+| **Destructive** | `oklch(57.7% 0.245 27.325)` | Error states only, never decorative |
+
+### Color Principles
+- **Zero accent color.** No blue, no purple, no gold. The only "emphasis" is Warm Ink itself
+- **No Accent Ramp.** This design deliberately has no brand accent — hierarchy is communicated through weight and opacity, not hue
+- Backgrounds: always white or near-white. Never warm-tinted, never cool-tinted
+- Borders always at reduced opacity (`border-border/20` to `border-border/40`) — barely visible structural lines
+- Focus ring uses Warm Ink — same as foreground, not a separate highlight color
+
+### Dark Mode Tokens (optional, pre-configured)
+| Semantic Name | Value |
+|---------------|-------|
+| Canvas | `oklch(14.5% 0 0)` |
+| Surface | `oklch(20.5% 0 0)` |
+| Foreground | `oklch(98.5% 0 0)` |
+| Muted Foreground | `oklch(70.8% 0 0)` |
+| Border | `oklch(100% 0 0 / 10%)` |
+
+---
+
+## 4. Spacing
 
 ### Spacing Scale (8px base unit)
 
@@ -106,18 +115,6 @@ All colors in OKLCH color space for perceptual uniformity. **Zero accent color**
 | Modal body padding | `px-10 md:px-14, py-14` | Generous internal breathing room |
 | Section sub-header | `mt-20, border-t pt-5 mb-6` | Thin divider + space before grid |
 
-### Layout Patterns
-
-**Navigation:** Fixed top, three-column CSS Grid (`grid-cols-3`). Left: nav links. Center: brand mark. Right: CTA. Height `h-16` mobile, `h-[100px]` desktop. Background `bg-background/95 backdrop-blur-sm`. No bottom border.
-
-**Product Grid:** `grid grid-cols-2 md:grid-cols-4 gap-0.5`. Images at `aspect-[3/4]` (portrait). Featured items use `col-span-2` + `aspect-[3/2]` (landscape) to break the rhythm.
-
-**Feature Block (alternating):** Two-column `grid-cols-[8fr_6fr]` — image-heavy asymmetry (57:43). Even rows reverse column order. Each block separated by `border-b border-border/20`.
-
-**Detail Modal:** Full overlay (`z-60` backdrop, `z-61` popup). Two-column body: left image on Surface Ash background (`object-contain`), right text with specs and CTA. Sticky header with close button (text, no icon).
-
-**Pull Quote:** Full-width centered single line. Breaks the card-grid rhythm, creates a breathing pause between dense sections.
-
 ### Responsive Rules
 - **Mobile-first collapse (< 768px):** All multi-column layouts collapse to single column
 - **Typography scaling:** All display text uses `clamp()`. Body text minimum 13px
@@ -128,55 +125,15 @@ All colors in OKLCH color space for perceptual uniformity. **Zero accent color**
 
 ---
 
-## 5. Component Stylings
+## 5. Material
 
-### Buttons / CTA
-**No solid buttons anywhere.** All CTAs are text + bottom border (underline):
+This design communicates luxury through absence of material effects.
 
-```
-/* Primary CTA — dark text, dark underline */
-text-foreground border-b border-foreground pb-px
-hover: text-muted-foreground border-muted-foreground
-
-/* Secondary CTA — muted text, muted underline */
-text-muted-foreground border-b border-muted-foreground pb-px
-hover: text-foreground border-foreground
-```
-- Always uppercase, 11–14px, tracking-[2px]
-- Hover inverts the primary/secondary color relationship
-- `transition-colors duration-200` or `duration-300`
-- CTAs appear in pairs (primary + secondary), horizontally spaced `gap-8`
-
-### Cards (Product Grid)
-- No border, no shadow, no rounded corners (`--radius: 0.125rem` ≈ 2px max)
-- Background: Surface Ash for image area, Canvas White for info area
-- Image: `object-cover` with `opacity-90` default → `opacity-100` on hover
-- Info zone: eyebrow (category, 10px uppercase) → name (13px uppercase, hover underline) → price (13px, font-light)
-- Maximum 2 font sizes per card — no exceptions
-
-### Cards (Showcase — with motion variants)
-- Image: `object-contain` (product floating on Surface Ash)
-- Hover: scale 1→1.04 via `motion/react` variant propagation (not CSS transition — see Motion section for why)
-- Underline animation via `motion.span` with `variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}`
-
-### Modal / Detail View
-- Max width `max-w-5xl`, max height `max-h-[92vh]`, scrollable
-- Sticky header: product code + name + text close button
-- Two-column body on desktop, single column on mobile
-- Spec table: no background, only `border-b` dividers. Label 10px / Value 14px / `py-3` per cell
-- Price displayed at 18px font-light
-- CTA row: underline links only, no solid buttons
-
-### Navigation Bar
-- `fixed top-0 w-full z-50`
-- `bg-background/95 backdrop-blur-sm` — no bottom border line
-- Brand mark centered, all links uppercase 11px with hover underline animation
-- No hamburger menu icon — text-based interaction only
-
-### Footer
-- `border-t border-border/20 py-12`
-- Two-end justified: brand info left, copyright right
-- All text 11–12px, font-light or muted color
+- **Shadows:** None. No `box-shadow` or `drop-shadow` on any element
+- **Borders:** `border-border/20` to `border-border/40` — barely visible structural lines, never decorative
+- **Corners:** `--radius: 0.125rem` (2px max). No rounded corners beyond this
+- **Blur:** Only on navigation background (`backdrop-blur-sm` at 95% opacity). Never on cards or modals
+- **Surface differentiation:** Achieved through lightness steps (Canvas White → Surface Ash → Whisper Gray), not shadows or borders
 
 ---
 
@@ -243,7 +200,7 @@ hover: text-foreground border-foreground
 
 ---
 
-## 7. Generative Background Effects (WebGL)
+## 7. WebGL / Shader Backgrounds
 
 For Hero sections requiring ambient visual texture, use WebGL full-screen effects rather than static backgrounds or CSS gradients. The effect should be barely perceptible — atmospheric, not attention-grabbing.
 
@@ -267,7 +224,7 @@ For Hero sections requiring ambient visual texture, use WebGL full-screen effect
 
 **Speed Control:** `u_time * 0.88` — slow enough to feel ambient, fast enough to notice movement.
 
-**Readability Mask:** Radial gradient overlay above Canvas:
+### Readability Mask (CSS overlay above Canvas)
 ```css
 background: radial-gradient(ellipse 70% 55% at 50% 40%, oklch(99% 0 0) 30%, oklch(99% 0 0 / 0) 100%);
 ```
@@ -286,7 +243,99 @@ Center clear zone ensures headline text remains readable; effect visible at edge
 
 ---
 
-## 8. Controlled Grid-Breaking (Asymmetric Tension)
+## 8. Icons
+
+**No icons.** This design uses text labels exclusively for all interactions. No icon buttons, no decorative icons, no Lucide or other icon libraries.
+
+The only graphic elements are:
+- Product images (photography)
+- Ghost Typography (decorative text as background layer)
+- WebGL generative texture
+
+---
+
+## 9. Components
+
+### Buttons / CTA
+**No solid buttons anywhere.** All CTAs are text + bottom border (underline):
+
+```html
+<!-- Primary CTA -->
+<a class="text-foreground border-b border-foreground pb-px uppercase text-[11px] tracking-[2px]
+  transition-colors duration-200 hover:text-muted-foreground hover:border-muted-foreground">
+  View Details
+</a>
+
+<!-- Secondary CTA -->
+<a class="text-muted-foreground border-b border-muted-foreground pb-px uppercase text-[11px] tracking-[2px]
+  transition-colors duration-200 hover:text-foreground hover:border-foreground">
+  Download
+</a>
+```
+- Hover inverts the primary/secondary color relationship
+- CTAs appear in pairs (primary + secondary), horizontally spaced `gap-8`
+
+### Cards (Product Grid)
+```html
+<div class="group cursor-pointer">
+  <div class="overflow-hidden bg-muted">
+    <img class="w-full aspect-[3/4] object-cover opacity-90
+      transition-[opacity,transform] duration-[600ms,1000ms]
+      group-hover:opacity-100 group-hover:scale-[1.03]" />
+  </div>
+  <div class="pt-3 pb-4">
+    <span class="text-[10px] uppercase tracking-[3px] text-muted-foreground">Category</span>
+    <p class="text-[13px] uppercase tracking-[2px] mt-1">Product Name</p>
+    <p class="text-[13px] font-light mt-0.5">$1,299</p>
+  </div>
+</div>
+```
+- No border, no shadow, no rounded corners
+- Maximum 2 font sizes per card — no exceptions
+- Featured items: `col-span-2` + `aspect-[3/2]` (landscape)
+
+### Cards (Showcase — with motion variants)
+```tsx
+<motion.button initial="rest" whileHover="hover" animate="rest">
+  <motion.img
+    variants={{ rest: { scale: 1 }, hover: { scale: 1.04 } }}
+    transition={{ duration: 0.28, ease: [0.45, 0, 0.55, 1] }}
+    class="object-contain bg-muted"
+  />
+  <motion.span
+    style={{ originX: 0 }}
+    variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+    class="absolute bottom-0 left-0 w-full h-px bg-foreground"
+  />
+</motion.button>
+```
+
+### Modal / Detail View
+- Max width `max-w-5xl`, max height `max-h-[92vh]`, scrollable
+- Sticky header: product code + name + text close button
+- Two-column body on desktop, single column on mobile
+- Spec table: no background, only `border-b` dividers. Label 10px / Value 14px / `py-3` per cell
+- Price displayed at 18px font-light
+- CTA row: underline links only, no solid buttons
+
+### Navigation Bar
+- `fixed top-0 w-full z-50`
+- `bg-background/95 backdrop-blur-sm` — no bottom border line
+- Three-column CSS Grid (`grid-cols-3`): Left nav links, center brand mark, right CTA
+- Height `h-16` mobile, `h-[100px]` desktop
+- Brand mark centered, all links uppercase 11px with hover underline animation
+- No hamburger menu icon — text-based interaction only
+
+### Footer
+- `border-t border-border/20 py-12`
+- Two-end justified: brand info left, copyright right
+- All text 11–12px, font-light or muted color
+
+---
+
+## 10. Layout Archetypes
+
+### Controlled Grid-Breaking (Asymmetric Tension)
 
 The signature visual technique: **within strict grid order, intentionally break alignment at specific points** to create tension and direct attention. This is what separates the design from generic grid layouts.
 
@@ -313,9 +362,21 @@ Hero or feature images extending to container edge with zero padding, filling th
 - **Breaks never touch color:** the palette remains uniform. Breaks happen only in geometry, position, and scale
 - **Alternate direction:** If one feature block has image-left, the next has image-right
 
+### Section Layout Reference
+
+| Section | Archetype | Key Features |
+|---------|-----------|-------------|
+| SiteHero | Full-bleed + WebGL | ASCII canvas background, radial mask, centered Display text |
+| CategoryShowcase | Centered Grid | 2-col/4-col grid, motion variant cards, `object-contain` |
+| ProductGrid | Dense Grid + Breaks | 4-col `gap-0.5`, col-span-2 rhythm breaks, `aspect-[3/4]` |
+| ProductFeature | Asymmetric Split | `grid-cols-[8fr_6fr]`, alternating direction, `py-[200px]` |
+| QuoteSection | Pull Quote | Full-width centered, `clamp(32px, 5vw, 64px)`, rhythm breaker |
+| ContactSection | Minimal CTA | Centered text, underline CTA pair, generous padding |
+| SiteFooter | Horizon Line | `border-t`, two-end justified, 11px text |
+
 ---
 
-## 9. Anti-Patterns (NEVER DO)
+## 11. Anti-Patterns (NEVER DO)
 
 ### Color Bans
 - No colored accents — no blue, no purple, no gold, no teal
@@ -357,15 +418,3 @@ Hero or feature images extending to container edge with zero padding, filling th
 - No generic placeholder names ("John Doe", "Acme Corp")
 - No round demo numbers (`99.99%`, `10,000+`)
 
----
-
-## 10. Mood Board
-
-```
-Precision · Restraint · Luxury · Silence
-
-If this design could speak, it would say:
-"We don't need to speak."
-```
-
-B&O design is subtraction taken to its extreme — every element must justify its existence. Remove everything that can be removed. What remains is the design.

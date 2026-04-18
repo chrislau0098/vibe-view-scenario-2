@@ -39,7 +39,7 @@ export function ProductFeature({ onProductClick }: { onProductClick: (p: Product
               </span>
 
               {/* 图片侧 */}
-              <div className="relative z-10 overflow-hidden bg-background min-h-[280px] md:min-h-[400px]">
+              <div className="relative z-10 overflow-hidden min-h-[400px] md:min-h-[500px]">
                 <button
                   className="w-full h-full block absolute inset-0"
                   onClick={() => onProductClick(product)}
@@ -47,7 +47,7 @@ export function ProductFeature({ onProductClick }: { onProductClick: (p: Product
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain scale-[1.15]"
                   />
                 </button>
               </div>
