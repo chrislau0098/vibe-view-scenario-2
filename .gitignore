@@ -15,7 +15,6 @@ dist-ssr
 # Local dev / AI config (not for distribution)
 CLAUDE.md
 AGENTS.md
-DESIGN.md
 CONTEXT.md
 .claude/
 .agents/
