@@ -70,11 +70,11 @@ export function SiteHero() {
           驱动智驾未来
         </h1>
 
-        <p className="text-[15px] font-light text-foreground/70 leading-relaxed whitespace-nowrap">
+        <p className="text-[15px] font-light text-foreground/70 leading-relaxed max-w-sm md:max-w-none md:whitespace-nowrap">
           专注汽车雷达核心部件研发与制造，以毫米级精度重新定义主动安全边界。
         </p>
 
-        <div className="flex items-center justify-center gap-8 pt-2">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-8 pt-2">
           <a
             href="#products"
             className="text-[12px] tracking-[2px] uppercase border-b border-foreground pb-0.5 text-foreground hover:text-muted-foreground transition-colors duration-300"

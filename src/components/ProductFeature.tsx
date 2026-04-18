@@ -39,7 +39,7 @@ export function ProductFeature({ onProductClick }: { onProductClick: (p: Product
               </span>
 
               {/* 图片侧 */}
-              <div className="relative z-10 overflow-hidden bg-background min-h-[400px]">
+              <div className="relative z-10 overflow-hidden bg-background min-h-[280px] md:min-h-[400px]">
                 <button
                   className="w-full h-full block absolute inset-0"
                   onClick={() => onProductClick(product)}
@@ -53,7 +53,7 @@ export function ProductFeature({ onProductClick }: { onProductClick: (p: Product
               </div>
 
               {/* 文字侧 */}
-              <div className="relative z-10 px-12 lg:px-20 py-[200px] flex flex-col justify-center space-y-6 bg-card">
+              <div className="relative z-10 px-8 md:px-12 lg:px-20 py-14 lg:py-[200px] flex flex-col justify-center space-y-6 bg-card">
                 {/* Eyebrow */}
                 <p className="text-[10px] tracking-[3px] uppercase text-muted-foreground">
                   {product.code} · {product.category}

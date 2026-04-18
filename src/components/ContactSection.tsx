@@ -21,7 +21,7 @@ export function ContactSection() {
         <p className="text-[14px] text-muted-foreground font-light leading-relaxed">
           我们的销售工程师团队将在一个工作日内回复，提供专属的技术方案与报价。
         </p>
-        <div className="flex justify-center gap-8 pt-2">
+        <div className="flex flex-col sm:flex-row justify-center gap-5 sm:gap-8 pt-2">
           <a
             href="mailto:sales@autoradar.cn"
             className="text-[12px] tracking-[2px] uppercase border-b border-foreground pb-px text-foreground hover:text-muted-foreground hover:border-muted-foreground transition-colors duration-300"

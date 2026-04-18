@@ -22,7 +22,7 @@ export function ProductModal({ product, onClose }: ProductModalProps) {
               transition={{ duration: 0.4, ease: [0.165, 0.84, 0.44, 1] as const }}
             >
               {/* Header — 吸顶，滚动时不随内容移动 */}
-              <div className="sticky top-0 z-10 bg-background px-10 md:px-14 pt-10 pb-7 flex items-start justify-between border-b border-border/20">
+              <div className="sticky top-0 z-10 bg-background px-6 md:px-14 pt-7 md:pt-10 pb-6 md:pb-7 flex items-start justify-between border-b border-border/20">
                 <div className="space-y-1.5">
                   <p className="text-[10px] tracking-[3px] uppercase text-muted-foreground">
                     {product.code} · {product.category}
@@ -49,7 +49,7 @@ export function ProductModal({ product, onClose }: ProductModalProps) {
                 </div>
 
                 {/* 右侧：内容区 */}
-                <div className="px-10 md:px-14 py-14 flex flex-col gap-10">
+                <div className="px-6 md:px-14 py-10 md:py-14 flex flex-col gap-10">
 
                   {/* 产品简介（首句） */}
                   <p className="text-[13px] text-muted-foreground font-light leading-relaxed">

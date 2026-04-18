@@ -1,7 +1,7 @@
 export function SiteFooter() {
   return (
     <footer className="border-t border-border/20 py-12">
-      <div className="max-w-7xl mx-auto px-6 flex justify-between items-end">
+      <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 sm:gap-0">
         <div className="space-y-1">
           <p className="text-[12px] tracking-[3px] uppercase font-light text-foreground">
             AutoRadar
