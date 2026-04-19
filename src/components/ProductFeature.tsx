@@ -39,7 +39,7 @@ export function ProductFeature({ onProductClick }: { onProductClick: (p: Product
               </span>
 
               {/* 图片侧 */}
-              <div className="relative z-10 overflow-hidden min-h-[400px] md:min-h-[500px]">
+              <div className="relative z-10 overflow-hidden bg-card min-h-[400px] md:min-h-[500px]">
                 <button
                   className="w-full h-full block absolute inset-0"
                   onClick={() => onProductClick(product)}
